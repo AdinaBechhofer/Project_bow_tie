@@ -1,3 +1,6 @@
+clear all;
+close all;
+
 p.NumBowties = 50;
 p.REmitter = 1; % 1 ohm 
 p.RCollector = 1; % 1 ohm 
@@ -11,16 +14,12 @@ p.Radius = 1; % 1 nm?
 p.taby = csvread('rspa20140811supp3.csv');    
 
 u.jnano = 1;
-
 v1 = 5;
 v2 = 0;
 u.vEmitter =  v1/p.REmitter;
 u.vCollector = v2/p.RCollector;
 
 x0 = zeros(2*p.NumBowties, 1);
-% u0 = zeros(2*p.NumBowties, 1);
-% u0(1:2:end) = v1/p.REmitter;
-% u0(2:2:end) = v2/p.RCollector;
 
 t_stop = 1;
 t_start = 0;
@@ -29,12 +28,9 @@ timestep = 0.05;
 % Implement forward euler
 X = ForwardEulerNew(x0,p,u,t_start,t_stop,timestep);
 
-figure;
-plot(X(5,:))
-hold on;
-plot(X(6,:))
+x0 = X(:,1);
+x0 = X(:,5);
+x0 = X(:,20);
 
-legend('vodd','veven')
-title('voltages over time','FontSize', 8)
-hold off;
-
+FDJ = FiniteDifferenceJacobian(@eval_f, x0, p, u, 0.01);
+disp(cond(FDJ))
