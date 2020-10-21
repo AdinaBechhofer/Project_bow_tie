@@ -1,4 +1,4 @@
-function J = Jnano(WF,F,R)
+function J = Jnano(WF,F,R, taby)
 % Compute the current density with Fowler-Nordheim theory on a nanoscale
 % tip.
 % Input: WF (work function [eV]), F (electric field [V/nm]), R (tip ROC [nm])
@@ -30,7 +30,7 @@ y = 2*sqrt(B.*F)./WF;
 %Fowler–Nordheim equation for nanoscopic field-emitters. Proceedings of the
 %Royal Society A: Mathematical, Physical and Engineering Sciences,
 %471(2174), p.20140811.
-taby = csvread('rspa20140811supp3.csv');     
+ 
 vy = interp1(taby(:,1),taby(:,2),y);
 ty = interp1(taby(:,1),taby(:,3),y);
 wy = interp1(taby(:,1),taby(:,4),y);
