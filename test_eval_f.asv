@@ -1,6 +1,3 @@
-clear all;
-close all;
-
 p.NumBowties = 50;
 p.REmitter = 1; % 1 ohm 
 p.RCollector = 1; % 1 ohm 
@@ -24,41 +21,31 @@ u.vCollector = v2/p.RCollector;
 C = zeros(2*p.NumBowties);
 G = zeros(2*p.NumBowties); % if G is non-linear need to stamp inside eval_f 
 for i = 1:2*p.NumBowties
-    C(i,i) = p.CemitterCollector+p.Cparasitic;
+    C(i,i) = 1;
     if mod(i,2) == 1
-        C(i,i+1)= -p.CemitterCollector;
-        G(i,i) = -1./(p.REmitter);
+        C(i,i+1)= p.CemitterCollector/(p.CemitterCollector+p.Cparasitic);
+        G(i,i) = 1./(p.R
     else
-        C(i,i-1)= -p.CemitterCollector;
-        G(i,i) = -1./(p.RCollector);
+        C(i,i-1)= p.CemitterCollector/(p.CemitterCollector+p.Cparasitic);
     end
 end
-invC = inv(C);
-p.CG = invC*G;
+p.invC = inv(C); 
 
 x0 = zeros(2*p.NumBowties, 1);
 
-t_stop = 5;
+t_stop = 1;
 t_start = 0;
-timestep = 0.01;
+timestep = 0.05;
 
 % Implement forward euler
 X = ForwardEulerNew(x0,p,u,t_start,t_stop,timestep);
 
-x0 = X(:,100);
-%x0 = X(:,5);
-%x0 = X(:,500);
+figure;
+plot(X(5,:))
+hold on;
+plot(X(6,:))
 
-f= -eval_f2(x0, p, u);
-J = FiniteDifferenceJacobian(@eval_f2, x0, p, u, 0.01);
-delX = J\f;
+legend('vodd','veven')
+title('voltages over time','FontSize', 8)
+hold off;
 
-tol = 1e-5;
-[x,r] = tgcr(J,f,tol,100);
-
-maxeval = max(abs(eig(J)))
-mineval = min(abs(eig(J)))
-
-% Chebyshev bounds: 
-A = (sqrt(maxeval/mineval)-1)/(sqrt(maxeval/mineval)+1);
-log(tol*2)/log(A)

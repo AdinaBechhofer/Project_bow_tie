@@ -17,10 +17,23 @@ v2 = 0;
 u.vEmitter =  v1/p.REmitter;
 u.vCollector = v2/p.RCollector;
 
+% Stamp C and invert; stamp G
+C = zeros(2*p.NumBowties);
+G = zeros(2*p.NumBowties); % if G is non-linear need to stamp inside eval_f 
+for i = 1:2*p.NumBowties
+    C(i,i) = p.CemitterCollector+p.Cparasitic;
+    if mod(i,2) == 1
+        C(i,i+1)= -p.CemitterCollector;
+        G(i,i) = -1./(p.REmitter);
+    else
+        C(i,i-1)= -p.CemitterCollector;
+        G(i,i) = -1./(p.RCollector);
+    end
+end
+invC = inv(C);
+p.CG = invC*G;
+
 x0 = zeros(2*p.NumBowties, 1);
-% u0 = zeros(2*p.NumBowties, 1);
-% u0(1:2:end) = v1/p.REmitter;
-% u0(2:2:end) = v2/p.RCollector;
 
 t_stop = 1;
 t_start = 0;
