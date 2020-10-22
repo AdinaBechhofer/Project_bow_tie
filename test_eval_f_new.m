@@ -28,8 +28,8 @@ x0 = zeros(4*p.NumBowties, 1);
 % u0(2:2:end) = v2/p.RCollector;
 
 t_stop = 1;
-t_start = 0;
-timestep = 0.05;
+t_start = 0;g
+timestep = 0.0005;
 
 % Implement forward euler
 X = ForwardEulerNewest(x0,p,u,t_start,t_stop,timestep, @eval_f_new);
