@@ -10,8 +10,8 @@ p.Area = 5e-18; % 5 nm^2
 p.Beta = 25; % enhancement factor 
 p.Distance = 10; % 10 nm
 p.workFunction = 5.1; % work function of gold 
-p.CemitterCollector = 0.1; % nano farad
-p.Cparasitic = 0.08; % 0.1 nano farad
+p.CemitterCollector = 2; % nano farad
+p.Cparasitic = 0.05; % 0.1 nano farad
 % p.Radius = 1; % 1 nm?
 p.Radius = 10; % 1 nm
 p.taby = csvread('rspa20140811supp3.csv');    
@@ -48,8 +48,8 @@ for i = 1:2*p.NumBowties
         end
     end
 end
-figure;
-spy(C)
+% figure;
+% spy(C)
 invC = inv(C);
 p.CG = invC*G;
 
