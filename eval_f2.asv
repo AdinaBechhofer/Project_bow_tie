@@ -13,12 +13,16 @@ taby = p.taby;
 %invC = p.invC;
 CG = p.CG;
 
+for i = 1:2*num_bowties
+    if mod(i,2)==1
+        f(i)=
 Jn = u.jnano;
 Ivec = zeros(2*num_bowties,1);
 Ivec(1:2:end) = u.vEmitter/Re - Jn;
 Ivec(2:2:end) = u.vCollector/Rc + Jn;
 
-f = CG*x+
+f = CG*x+1./(Cec+Cp)*Ivec;
+
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);
 % for i =1:2*num_bowties

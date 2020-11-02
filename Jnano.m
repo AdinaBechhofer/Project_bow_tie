@@ -35,10 +35,10 @@ vy = interp1(taby(:,1),taby(:,2),y);
 ty = interp1(taby(:,1),taby(:,3),y);
 wy = interp1(taby(:,1),taby(:,4),y);
 psiy = interp1(taby(:,1),taby(:,5),y);
-disp(vy)
-disp(ty)
-disp(wy)
-disp(psiy)
+%disp(vy)
+% disp(ty)
+% disp(wy)
+% disp(psiy)
 J = aFN.*WF.^(-1).*F.^2.*(ty+WF./(e_const.*F.*R).*psiy).^(-2) ...
     .*exp(-bFN.*WF.^(3/2)./F.*(vy+WF./(e_const.*F.*R).*wy));
 %J = aFN.*WF.^(-1).*F.^2.*(ty+WF./(e_const.*F.*R).*psiy).^(-2) ...

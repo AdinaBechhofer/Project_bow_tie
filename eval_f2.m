@@ -12,13 +12,21 @@ ROC = p.Radius;
 taby = p.taby;
 %invC = p.invC;
 CG = p.CG;
-
-Jn = u.jnano;
 Ivec = zeros(2*num_bowties,1);
-Ivec(1:2:end) = u.vEmitter/Re - Jn;
-Ivec(2:2:end) = u.vCollector/Rc + Jn;
-
+% Jn = u.jnano;
+% Ivec(1:2:end) = u.vEmitter/Re - Jn;
+% Ivec(2:2:end) = u.vCollector/Rc + Jn;
+for i = 1:2*num_bowties
+    if mod(i,2)==1
+        Ivec(i) = u.vEmitter/Re - A*Jnano(phi,beta*(x(i)-x(i+1))/d,ROC,taby);
+    else
+        Ivec(i) = u.vCollector/Rc + A*Jnano(phi,beta*(x(i-1)-x(i))/d,ROC,taby);
+        %disp(A*Jnano(phi,beta*(x(i-1)-x(i))/d,ROC,taby))
+    end
+    
+end
 f = CG*x+1./(Cec+Cp)*Ivec;
+
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);
 % for i =1:2*num_bowties
