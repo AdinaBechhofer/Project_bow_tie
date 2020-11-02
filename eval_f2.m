@@ -10,7 +10,7 @@ Cec = p.CemitterCollector;
 Cp = p.Cparasitic;
 ROC = p.Radius;
 taby = p.taby;
-%invC = p.invC;
+invC = p.invC;
 CG = p.CG;
 Ivec = zeros(2*num_bowties,1);
 % Jn = u.jnano;
@@ -25,7 +25,7 @@ for i = 1:2*num_bowties
     end
     
 end
-f = CG*x+1./(Cec+Cp)*Ivec;
+f = CG*x+invC*Ivec;
 
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);
