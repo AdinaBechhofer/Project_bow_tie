@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-p.NumBowties = 50;
+p.NumBowties = 100;
 p.REmitter = 1; % 1 ohm 
 p.RCollector = 1; % 1 ohm 
 %p.Area = 0.0001; % need to actually get a reasonable estimate  
@@ -15,7 +15,9 @@ p.Cparasitic = 0.08; % 0.1 nano farad
 % p.Radius = 1; % 1 nm?
 p.Radius = 10; % 1 nm
 p.taby = csvread('rspa20140811supp3.csv');    
-p.row = 5;
+% number of rows
+p.row = 10;
+% number of columns 
 p.col = 10;
 p.Ccoupling = 0.03;
 %u.jnano = 1;
@@ -33,19 +35,21 @@ for i = 1:2*p.NumBowties
     if mod(i,2) == 1
         C(i,i+1)= C(i,i+1)-p.CemitterCollector;
         G(i,i) = G(i,i) -1./(p.REmitter);
-        if  i> 2*p.col
+        if  i> 2*p.row
             C(i,i) = C(i,i) + p.Ccoupling;
-            C(i,i-2*p.col+1) = C(i,i-2*p.col+1) -p.Ccoupling;
+            C(i,i-2*p.row+1) = C(i,i-2*p.row+1) -p.Ccoupling;
         end 
     else
         C(i,i-1)= -p.CemitterCollector;
         G(i,i) = -1./(p.RCollector);
-        if i<= 2*p.col*(p.row-1)
+        if i<= 2*p.row*(p.col-1)
             G(i,i) = G(i,i) + p.Ccoupling;
-            G(i,i+2*p.col-1) = G(i,i+2*p.col-1) + p.Ccoupling;
+            C(i,i+2*p.row-1) = C(i,i+2*p.row-1) + p.Ccoupling;
         end
     end
 end
+figure;
+spy(C)
 invC = inv(C);
 p.CG = invC*G;
 
