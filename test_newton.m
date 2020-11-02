@@ -52,7 +52,12 @@ end
 invC = inv(C);
 p.CG = invC*G;
 
-x0 = ones(2*p.NumBowties, 1)*-1000;
+x0 = rand(2*p.NumBowties, 1)
+x0 = zeros(2*p.NumBowties, 1);
+%x0(1:p.NumBowties/2) = -100;
+%x0(p.NumBowties/2*3:end) = 100;
+
+%x0 = ones(2*p.NumBowties, 1);
 errf = 1e-10;
 errdelx = 1e-10;
 reldelx = 1e-10;
