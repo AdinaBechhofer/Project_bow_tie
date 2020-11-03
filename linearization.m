@@ -1,6 +1,6 @@
 function [A,B] = linearization(f, x0, p, u)
 epsilon = 0.01;
-A = FiniteDifferenceJacobian(@eval_f2, x0, p, u);
+A = FiniteDifferenceJacobian(f, x0, p, u);
 f_at_x0 = f(x0,p,u);
 vE= u.vEmitter;
 u.vEmitter = vE + epsilon;
