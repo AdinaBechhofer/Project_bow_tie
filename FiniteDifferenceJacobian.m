@@ -1,5 +1,5 @@
 function J = FiniteDifferenceJacobian(f, x, p, u)
-epsilon = 0.01;
+epsilon = 0.001;
 J = zeros(length(x), length(x));
 for k=1:length(x)
     ek = zeros(length(x),1);
