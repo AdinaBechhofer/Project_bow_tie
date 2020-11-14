@@ -26,7 +26,7 @@ for i = 1:2*num_bowties
     
 end
 f = CG*x+invC*Ivec;
-
+disp(size(CG))
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);
 % for i =1:2*num_bowties

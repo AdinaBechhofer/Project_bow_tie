@@ -1,7 +1,7 @@
-function f= eval_f2(x,p,u)
+function f= eval_f3(x,t,p,u,b)
 num_bowties = p.NumBowties;
-Re = p.REmitter;
-Rc = p.RCollector;
+%Re = p.REmitter;
+%Rc = p.RCollector;
 A = p.Area;
 beta = p.Beta;
 d = p.Distance;
@@ -10,19 +10,24 @@ Cec = p.CemitterCollector;
 Cp = p.Cparasitic;
 ROC = p.Radius;
 taby = p.taby;
-%invC = p.invC;
+invC = p.invC;
 CG = p.CG;
-
+Ivec = zeros(2*num_bowties,1);
+% Jn = u.jnano;
+% Ivec(1:2:end) = u.vEmitter/Re - Jn;
+% Ivec(2:2:end) = u.vCollector/Rc + Jn;
 for i = 1:2*num_bowties
     if mod(i,2)==1
-        f(i)=
-Jn = u.jnano;
-Ivec = zeros(2*num_bowties,1);
-Ivec(1:2:end) = u.vEmitter/Re - Jn;
-Ivec(2:2:end) = u.vCollector/Rc + Jn;
+        Ivec(i) = - A*Jnano(phi,beta*(x(i)-x(i+1))/d,ROC,taby);
+    else
+        Ivec(i) = A*Jnano(phi,beta*(x(i-1)-x(i))/d,ROC,taby);
+        %disp(A*Jnano(phi,beta*(x(i-1)-x(i))/d,ROC,taby))
+    end
+    
+end
+uvec = [u.vEmitter; u.vCollector];
 
-f = CG*x+1./(Cec+Cp)*Ivec;
-
+f = CG*x+invC*Ivec + invC*b*uvec;
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);
 % for i =1:2*num_bowties
