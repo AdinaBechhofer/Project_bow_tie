@@ -1,4 +1,4 @@
-clear all;
+%clear all;
 close all;
 
 p.NumBowties = 500;
@@ -85,9 +85,9 @@ X = ForwardEuler_t(@eval_f3,x0,p,u,tvec,b);
 [VL, S, VR] = svd(X);
 figure(1)
 semilogx(diag(S))
-ylabel('Singular value')
+ylabel('Singular values')
 xlabel('index')
-q = 10;
+q = 5;
 Vq = VL(:,1:q);
 
 c1 = zeros(2*p.NumBowties,1);
@@ -103,32 +103,35 @@ xq0 = zeros(q, 1);
 t_stop = 0.05; % just do 10 steps -- too slow!
 t_start = 0;
 timestep = 0.005; 
+X_lin_hat = zeros(length(xq0),ceil((t_stop-t_start)/timestep));
+
+%% Linearize at every step
 % Implement forward euler with linearize system
-Xo(:,1) = x0;
-X_lin(:,1) = x0;
-X_lin_hat(:,1) = xq0;
-t(1) = t_start;
-for n=1:ceil((t_stop-t_start)/timestep)
-   dt = min(timestep, (t_stop-t(n)));
-   t(n+1)= t(n) + dt;
-   f = eval_f3(X(:,n),t(n),p,u,b);
-   Xo(:,n+1)= Xo(:,n) +  (dt * f);
-   [A, B] = linearize_in_x(@eval_f3,x0,t(n),p,u,b);
-   Ahat = Vq'*A*Vq;
-   Bhat = Vq'*B;
-   f_approx = A*X_lin(:,n)+B*[1; u.vEmitter; u.vCollector];
-   X_lin(:,n+1)= X_lin(:,n) +  (dt * f_approx);
-   f_approx_hat = Ahat*X_lin_hat(:,n)+Bhat*[1; u.vEmitter; u.vCollector];
-   X_lin_hat(:,n+1)= X_lin_hat(:,n) +  (dt * f_approx_hat);
-end 
-
-y1 = c1'*Xo;
-y1_lin = c1'*X_lin;
-y1_lin_hat = c1hat'*X_lin_hat;
-
-y2 = c2'*Xo;
-y2_lin = c2'*X_lin;
-y2_lin_hat = c2hat'*X_lin_hat;
+% Xo(:,1) = x0;
+% X_lin(:,1) = x0;
+% X_lin_hat(:,1) = xq0;
+% t(1) = t_start;
+% for n=1:ceil((t_stop-t_start)/timestep)
+%    dt = min(timestep, (t_stop-t(n)));
+%    t(n+1)= t(n) + dt;
+%    f = eval_f3(X(:,n),t(n),p,u,b);
+%    Xo(:,n+1)= Xo(:,n) +  (dt * f);
+%    [A, B] = linearize_in_x(@eval_f3,x0,t(n),p,u,b);
+%    Ahat = Vq'*A*Vq;
+%    Bhat = Vq'*B;
+%    f_approx = A*X_lin(:,n)+B*[1; u.vEmitter; u.vCollector];
+%    X_lin(:,n+1)= X_lin(:,n) +  (dt * f_approx);
+%    f_approx_hat = Ahat*X_lin_hat(:,n)+Bhat*[1; u.vEmitter; u.vCollector];
+%    X_lin_hat(:,n+1)= X_lin_hat(:,n) +  (dt * f_approx_hat);
+% end 
+% 
+% y1 = c1'*Xo;
+% y1_lin = c1'*X_lin;
+% y1_lin_hat5 = c1hat'*X_lin_hat;
+% 
+% y2 = c2'*Xo;
+% y2_lin = c2'*X_lin;
+% y2_lin_hat5 = c2hat'*X_lin_hat;
 
 % figure;
 % plot(t, y1, t, y1_lin)
@@ -138,13 +141,67 @@ y2_lin_hat = c2hat'*X_lin_hat;
 % title('voltages over time','FontSize', 8)
 % hold off;
 
+% figure;
+% plot(t, y1, 'k.-', t, y1_lin, 'b',t, y1_lin_hat,'r--')
+% hold on;
+% plot(t, y2, 'k.-', t, y2_lin, 'b',t, y2_lin_hat,'r--')
+% 
+% legend('v1','v1-lin','v1-lin-q=1','v2','v2-lin','v2-lin-q=1')
+% title('voltages over time','FontSize', 8)
+% hold off;
+% 
+% 
+% figure;
+% plot(t, y1, 'k.-', t, y1_lin, 'b',t, y1_lin_hat10,'r--',t, y1_lin_hat5,'c--', t, y1_lin_hat2, 'm--')
+% hold on;
+% plot(t, y2, 'k.-', t, y2_lin, 'b',t, y2_lin_hat10,'r--',t, y2_lin_hat5,'c--', t, y2_lin_hat2, 'm--')
+% 
+% legend('vodd','vodd-lin','vodd-lin-reduced','veven','veven-lin','veven-lin-reduced')
+% title('voltages over time','FontSize', 8)
+% hold off;
+
+%% linearize once near x0 = 0
+[A, B] = linearize_in_x(@eval_f3,x0,t(n),p,u,b);
+Ahat = Vq'*A*Vq;
+Bhat = Vq'*B;
+Xo(:,1) = x0;
+X_lin(:,1) = x0;
+X_lin_hat(:,1) = xq0;
+t(1) = t_start;
+
+for n=1:ceil((t_stop-t_start)/timestep)
+   dt = min(timestep, (t_stop-t(n)));
+   t(n+1)= t(n) + dt;
+   f = eval_f3(X(:,n),t(n),p,u,b);
+   Xo(:,n+1)= Xo(:,n) +  (dt * f);
+   f_approx = A*X_lin(:,n)+B*[1; u.vEmitter; u.vCollector];
+   X_lin(:,n+1)= X_lin(:,n) +  (dt * f_approx);
+   f_approx_hat = Ahat*X_lin_hat(:,n)+Bhat*[1; u.vEmitter; u.vCollector];
+   X_lin_hat(:,n+1)= X_lin_hat(:,n) +  (dt * f_approx_hat);
+end 
+
+y1 = c1'*Xo;
+y1_lin = c1'*X_lin;
+y1_lin_hat5 = c1hat'*X_lin_hat;
+
+y2 = c2'*Xo;
+y2_lin = c2'*X_lin;
+y2_lin_hat5 = c2hat'*X_lin_hat;
+
 figure;
-plot(t, y1, 'k', t, y1_lin, 'b',t, y1_lin_hat,'r--')
+plot(t, y1, 'k.-')
 hold on;
-plot(t, y2, 'k', t, y2_lin, 'b',t, y2_lin_hat,'r--')
-legend('vodd','vodd-lin','vodd-lin-reduced','veven','veven-lin','veven-lin-reduced')
+plot(t, y1_lin, 'b.-')
+plot(t, y1_lin_hat1,'r--')
+plot(t, y1_lin_hat2,'g--')
+plot(t, y1_lin_hat5,'m--')
+plot(t, y2, 'k.-')
+plot(t, y2_lin, 'b.-')
+plot(t, y2_lin_hat1,'r--')
+plot(t, y2_lin_hat2,'g--')
+plot(t, y2_lin_hat5,'m--')
+legend('v1','v1-lin','v1-lin-q=1','v1-lin-q=2','v1-lin-q=5','v2','v2-lin','v2-lin-q=1','v2-lin-q=2','v2-lin-q=5')
 title('voltages over time','FontSize', 8)
 hold off;
-
-
-
+ylabel('Voltage (V)')
+xlabel('time (ns)')
