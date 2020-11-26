@@ -6,14 +6,11 @@ A = p.Area;
 beta = p.Beta;
 d = p.Distance;
 phi = p.workFunction;
-Cec = p.CemitterCollector;
-Cp = p.Cparasitic;
 ROC = p.Radius;
 taby = p.taby;
 Ivec = zeros(2*num_bowties,1);
 C = zeros(2*p.NumBowties);
 G = zeros(2*p.NumBowties); % this is for the linear part. Non-linear part is stamped in eval_f 
-
 for i = 1:2*p.NumBowties
     C(i,i) = p.CemitterCollector+p.Cparasitic;
     if mod(i,2) == 1
@@ -42,6 +39,4 @@ for i = 1:2*num_bowties
     end
     
 end
-uvec = [u.vEmitter; u.vCollector];
-
-f = C\(G*x+Ivec + b*uvec);
+f = C\(G*x+Ivec + b*u);

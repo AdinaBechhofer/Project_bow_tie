@@ -24,8 +24,7 @@ p.Ccoupling = 0.03;
 p.t = 0;
 v1 = 5;
 v2 = 0;
-u.vEmitter =  v1/p.REmitter;
-u.vCollector = v2/p.RCollector;
+u =  [v1/p.REmitter;v2/p.RCollector];
 
 x0 = zeros(2*p.NumBowties, 1);
 unitb = [1, 0; 0, 1];

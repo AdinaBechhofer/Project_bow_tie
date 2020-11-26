@@ -1,17 +1,14 @@
-function [A,B] = linearization(f, x0, p, u)
+function [A,B] = linearization(f,x0,t,p,u,b)
 epsilon = 0.001;
-A = FiniteDifferenceJacobian(f, x0, p, u);
-f_at_x0 = f(x0,p,u);
-vE= u.vEmitter;
-u.vEmitter = vE + epsilon;
-Ju(:,1) = (f(x0,p,u) - f_at_x0)/epsilon;
-u.vEmitter = vE;
-vC = u.vCollector; 
-u.vCollector = vC + epsilon;
-Ju(:,2) = (f(x0,p,u) - f_at_x0)/epsilon;
-u.vCollector = vC;
-K0= f_at_x0 - A*x0 - Ju*[vE; vC];
-%disp(K0)
+A = FiniteDifferenceJacobian_t(f, x0,t, p, u,b);
+f_at_x0 = f(x0,t,p,u,b);
+Ju = zeros(length(x0), length(u));
+for k=1:length(u)
+    ek = zeros(size(u));
+    ek(k) = 1;
+    Ju(:,k) = (f(x0,t,p,u+epsilon*ek,b) - f_at_x0)/epsilon;
+end
+K0= f_at_x0 - A*x0 - Ju*u;
 B = [K0,Ju];
 %disp(A*x0- f(x0,p,u))
 
