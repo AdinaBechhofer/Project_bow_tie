@@ -1,7 +1,7 @@
-clear all;
+%clear all;
 close all;
 
-p.NumBowties = 10;
+p.NumBowties = 20;
 % number of rows
 p.row = 5;
 % number of columns 
@@ -52,15 +52,29 @@ p.invC = inv(C);
 p.CG = p.invC*G;
 
 v1 = 5;
-v2 = 0;
+v2 = 1;
 u.vEmitter =  v1/p.REmitter;
 u.vCollector = v2/p.RCollector;
-unitb = [1, 0; 0, 1];
+u.ampE = 0.5;
+u.ampC = 0.5;
+u.phaseE = 0;
+u.phaseC = 0;
+
+unitb = [1, 0, 0, 0; 0, 1, 0, 0];
 b = repmat(unitb,p.NumBowties,1);
+
+% excite only the left most row, i.e. add sinusodial for those
+for i = 1:2*p.row
+    if mod(i,2) == 1
+        b(i,3) = 1;
+    else
+        b(i,4) = 1;
+    end
+end
 
 x0 = ones(2*p.NumBowties, 1);
 
-t_stop = 0.5;
+t_stop = 1;
 t_start = 0;
 timestep = 0.001;
 
@@ -70,7 +84,7 @@ u.period = 20*timestep;
 % %u.amp = 0;
 % %X0 = ForwardEuler_t(@fjbowtie,x0,p,u,tvec,b);
 % %X0 = TrapMethod(x0,@(xp,tp)fjbowtie(xp,tp,p,u,b), tvec);
-u.amp = 1;
+
 % %X = ForwardEuler_t(@fjbowtie,x0,p,u,tvec,b);
 X = TrapMethod(x0,@(xp,tp)fjbowtie(xp,tp,p,u,b), tvec);
 
