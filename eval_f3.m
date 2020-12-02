@@ -1,4 +1,5 @@
-function f= eval_f3(x,t,p,u,b)
+function f= eval_f3(x,p,u,b, varargin)
+%disp(p)
 num_bowties = p.NumBowties;
 %Re = p.REmitter;
 %Rc = p.RCollector;
@@ -6,8 +7,8 @@ A = p.Area;
 beta = p.Beta;
 d = p.Distance;
 phi = p.workFunction;
-Cec = p.CemitterCollector;
-Cp = p.Cparasitic;
+%Cec = p.CemitterCollector;
+%Cp = p.Cparasitic;
 ROC = p.Radius;
 taby = p.taby;
 invC = p.invC;
@@ -25,9 +26,9 @@ for i = 1:2*num_bowties
     end
     
 end
-uvec = [u.vEmitter; u.vCollector; u.sinuE; u.sinuC]; % add sinusodial for emitter and collector
+%uvec = [u.vEmitter; u.vCollector; u.sinuE; u.sinuC]; % add sinusodial for emitter and collector
 
-f = CG*x+invC*Ivec + invC*b*uvec;
+f = CG*x+invC*Ivec + invC*b*u;
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);
 % for i =1:2*num_bowties

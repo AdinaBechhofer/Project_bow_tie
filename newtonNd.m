@@ -31,8 +31,11 @@ maxIters=500;
 
 % Newton loop
 for iter=1:maxIters
-    [f, J] = fJfhand(x0, p, u, b, varargin);
-   
+    if ~isempty(varargin)
+        [f, J] = fJfhand(x0, p, u, b, varargin);
+    else 
+        [f, J] = fJfhand(x0, p, u, b);
+    end 
     %f = fhand(x0,N,V);              % evaluate function
     %J = Jhand(x0,N,V);              % evaluate jacobian
     dx=-J\f;                    % solve linear system

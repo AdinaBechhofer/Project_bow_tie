@@ -1,14 +1,20 @@
-function [f, J] = fjbowtie(x,t,p,u,b)
-T = u.period; %timestep approx 0.001
+function [f, J] = fjbowtie(x,p,u,b, varargin)
+%T = p.period; %timestep approx 0.001
 
-u.sinuE = u.ampE*cos(2*pi/T *t + u.phaseE);
-u.sinuC = u.ampC*cos(2*pi/T *t + u.phaseC);
+%u.sinuE = p.ampE*cos(2*pi/T *t + p.phaseE);
+%u.sinuC = p.ampC*cos(2*pi/T *t + p.phaseC);
 
 %uEo = u.vEmitter;
 %uCo = u.vCollector;
 %u.vEmitter = uEo * (1 + u_p);
 %u.vCollector = uCo * (1 + u_p);
-f = eval_f3(x,t,p,u,b);
-J = FiniteDifferenceJacobian_t(@eval_f3, x, t, p, u, b);
+if ~isempty(varargin)
+    t = varargin{1};
+    f = eval_f3(x,p,u,b, t);
+    J = FiniteDifferenceJacobian_t(@eval_f3, x, p, u, b, t);
+else 
+    f = eval_f3(x,p,u,b);
+    J = FiniteDifferenceJacobian_t(@eval_f3, x, p, u, b);
+end 
 %u.vEmitter = uEo;
 %u.vCollector = uCo;
