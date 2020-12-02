@@ -4,8 +4,8 @@ X(:,1) = x0;
 if length(varargin) ==1
     tvec = varargin{1};
     for n = 1:length(tvec)-1
-       dt = tvec(n+1)-t(n);
-       f = fhand(X(:,n),p,u,b, t(n));
+       dt = tvec(n+1)-tvec(n);
+       f = fhand(X(:,n),p,u,b, tvec(n));
        X(:,n+1)= X(:,n) +  (dt * f);
     end 
 elseif length(varargin) >1
