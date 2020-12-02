@@ -26,13 +26,39 @@ v1 = 5;
 v2 = 0;
 u =  [v1/p.REmitter;v2/p.RCollector];
 
+% Stamp C and invert; stamp G
+C = zeros(2*p.NumBowties);
+G = zeros(2*p.NumBowties); % this is for the linear part. Non-linear part is stamped in eval_f 
+for i = 1:2*p.NumBowties
+    C(i,i) = p.CemitterCollector+p.Cparasitic;
+    if mod(i,2) == 1
+        C(i,i+1)= C(i,i+1)-p.CemitterCollector;
+        G(i,i) = G(i,i) -1./(p.REmitter);
+        if  i> 2*p.row
+            C(i,i) = C(i,i) + p.Ccoupling;
+            C(i,i-2*p.row+1) = C(i,i-2*p.row+1) -p.Ccoupling;
+        end 
+    else
+        C(i,i-1)= -p.CemitterCollector;
+        G(i,i) = -1./(p.RCollector);
+        if i<= 2*p.row*(p.col-1)
+            G(i,i) = G(i,i) + p.Ccoupling;
+            C(i,i+2*p.row-1) = C(i,i+2*p.row-1) + p.Ccoupling;
+        end
+    end
+end
+% figure;
+% spy(C)
+p.invC = inv(C);
+p.CG = p.invC*G;
+
 x0 = zeros(2*p.NumBowties, 1);
 unitb = [1, 0; 0, 1];
 b = repmat(unitb,p.NumBowties,1);
 p.b = b;
 c = eye(2*p.NumBowties);
-x_ss = newtonNd_old(@fjbowtie2,x0,p,u,b,8);
-[A,B] = linearization(@eval_f4, x_ss,p.t, p, u,b);
+x_ss = newtonNd_old(@fjbowtie,x0,p,u,b,8);
+[A,B] = linearization(@eval_f3, x_ss,p.t, p, u,b);
 
 freqs = [1,3,10,30,100,300,1000,3000, 10000]
 H_mag = zeros(size(freqs));
