@@ -11,16 +11,27 @@ This function evaluates ![equation](https://latex.codecogs.com/gif.latex?\frac{d
 Usage: eval_f3 is called `eval_f3(x,p, u, b, t)` where the t is an optional argument. Likewise, it can be called `eval_f3(x, p, u, b)`
 
 x: Vector of length = number of state variables.
+
 p: Struct with the relevant parameters. Must contain:
+    
     * p.Area
+    
     * p.Beta
+    
     * p.Distance
+    
     * p.workFunction
+    
     * p.Radius
+    
     * p.taby
+    
     * p.invC
+    
     * p.CG
+
 u: Vector of inputs 
+
 b: Matrix of length = length(x) and width = length(u)
 
 #### fjbowtie
