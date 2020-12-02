@@ -59,8 +59,7 @@ p.Ccoupling = 0.03;
 
 v1 = 5;
 v2 = 0;
-u.vEmitter =  v1/p.REmitter;
-u.vCollector = v2/p.RCollector;
+u =  [v1/p.REmitter; v2/p.RCollector];
 
 C = zeros(2*p.NumBowties);
 G = zeros(2*p.NumBowties);
@@ -101,7 +100,7 @@ for n=1:ceil((t_stop-t_start)/timestep)
    f = eval_f2(X(:,n),p,u);
    X(:,n+1)= X(:,n) +  (dt * f);
    [A,B] = linearization(@eval_f2, X_lin(:,n), p, u);
-   f_approx = A*X_lin(:,n)+B*[1; u.vEmitter; u.vCollector];
+   f_approx = A*X_lin(:,n)+B*[1; u];
    X_lin(:,n+1)= X_lin(:,n) +  (dt * f_approx);
 end 
 
