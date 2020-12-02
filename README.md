@@ -34,6 +34,7 @@ u: Vector of inputs
 
 b: Matrix of length = length(x) and width = length(u)
 
+
 #### fjbowtie
 This function returns the f and J for eval_f3. 
 
@@ -41,13 +42,29 @@ Usage: `fjbowtie(x,p,u,b,t)` or `fjbowtie(x,p,u,b)`. The t is optional
 
 u: Vector. Must be precomputed. 
 
+
 #### FiniteDifferenceJacobian_t
 This function computes the finite difference Jacobian of the handle function given to it
 
 Usage: `FiniteDifferenceJacobian_t(f,x,p,u,b,t)` or `FiniteDifferenceJacobian_t(f,x,p,u,b)`. The `t` is optional. 
+
 
 #### ForwardEuler_t
 This function computes the forward Euler simulation. 
 
 Usage: `X = ForwardEuler_t(fhand, x0,p,u,b,t)` or `[X, t] =  ForwardEuler_t(fhand, x0,p,u,b, t_start, t_stop, del_t)` or `[X, t] =  ForwardEuler_t(fhand, x0,p,u,b, 'dynamic', t_start, t_stop)`
 
+
+#### FJFTrap 
+This function computes the f and J for the trapezoidal method 
+
+Usage: `FJFTrap(x, p, u, b, t, gamma, dt, fJhand)`
+
+
+#### newtonNd
+This function does the newton method for an N dimensional vector. 
+
+Usage: `newtonNd(fJfhand,x0,p, u, b, t)` or `newtonNd(fJfhand,x0,p, u, b)` for a normal non-linear function computation. 
+
+For trapezoidal method solving, use `newtonNd(TrapHand,x0,p, u, b, t, gamma, dt, integrand)` where `TrapHand` is `FJFTrap` and `integrand` is the fJ function handle for the functin you're interested in integrating. 
+ 
