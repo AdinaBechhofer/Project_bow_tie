@@ -56,18 +56,20 @@ x0 = zeros(2*p.NumBowties, 1);
 unitb = [1, 0; 0, 1];
 b = repmat(unitb,p.NumBowties,1);
 p.b = b;
+b(1:10) = 1;
+b(11:end) = 0;
 c = eye(2*p.NumBowties);
-x_ss = newtonNd_old(@fjbowtie,x0,p,u,b,8);
-[A,B] = linearization(@eval_f3, x_ss,p.t, p, u,b);
+x_ss = newtonNd(@fjbowtie,x0,p,u,b);
+[A,B] = linearization(@eval_f3, x_ss, p, u,b);
 
-freqs = [1,3,10,30,100,300,1000,3000, 10000]
+freqs = [0.001, 0.003, 0.01, 0.03, 0.1,0.3, 1,3,10,30,100,300,1000,3000, 10000]
 H_mag = zeros(size(freqs));
 H_phase = zeros(size(freqs));
 for i =1:length(freqs)
     omega = freqs(i);
     H = c'*inv(1j*omega*eye(2*p.NumBowties) - A)*b;
-    H_mag(i) = abs(H(2,1));
-    H_phase(i) = angle(H(2,1));
+    H_mag(i) = abs(H(81,1));
+    H_phase(i) = angle(H(81,1));
 end 
 
 figure;

@@ -27,7 +27,7 @@ tol=1e-10;          % convergence tolerance
 %     maxIters = varargin{1}
 % end
 x00=x0;             % initial guess
-
+maxIters=500;
 
 % Newton loop
 for iter=1:maxIters
