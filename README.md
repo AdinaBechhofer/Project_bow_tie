@@ -52,7 +52,7 @@ Usage: `FiniteDifferenceJacobian_t(f,x,p,u,b,t)` or `FiniteDifferenceJacobian_t(
 #### ForwardEuler_t
 This function computes the forward Euler simulation. 
 
-Usage: `X = ForwardEuler_t(fhand, x0,p,u,b,t)` or `[X, t] =  ForwardEuler_t(fhand, x0,p,u,b, t_start, t_stop, del_t)` or `[X, t] =  ForwardEuler_t(fhand, x0,p,u,b, 'dynamic', t_start, t_stop)`
+Usage: `X = ForwardEuler_t(fhand, x0,p,U,b,t)` or `[X, t] =  ForwardEuler_t(fhand, x0,p,U,b, t_start, t_stop, del_t)` or `[X, t] =  ForwardEuler_t(fhand, x0,p,U_func,b, 'dynamic', t_start, t_stop)`. Where `U` is the time dependant input matrix of size `length(x0)*length(tvec)`
 
 
 #### FJFTrap 
@@ -73,4 +73,3 @@ For trapezoidal method solving, use `newtonNd(TrapHand,x0,p, u, b, t, gamma, dt,
  This function performs the trapezoidal time integration method for an input function. 
 
  Usage: `TrapMethod(x0,p,u,b, fJfhand, tvec)` where `fJhand` is the function you want to integrate. 
- 
