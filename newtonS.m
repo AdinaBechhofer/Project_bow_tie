@@ -1,4 +1,4 @@
-function x0 = newtonS(fhand,x0,u,itpause,varargin)
+function x0 = newtonS(x0,p,U,b,fJfhand,tvec)
 % function newton1d(fhand,x0,itpause)
 % 
 % INPUTS:
@@ -19,18 +19,18 @@ if nargin<3
     error('Must provide three input arguments.  Type ''help newton1d'' for details');
 end
 
-tol=1e-10;          % convergence tolerance
+tol=1e-8;          % convergence tolerance
 
-if isempty(varargin)
-    maxIters=500;       % max # of iterations
-else
-    maxIters = varargin{1}
-end
+%if isempty(varargin)
+    maxIters=50;       % max # of iterations
+% else
+%     maxIters = varargin{1}
+%end
 x00=x0;             % initial guess
 
 % Newton loop
 for iter=1:maxIters
-    [f, J] = ShootingMethod(x0,fhand,u);              % evaluate function
+    [f, J] = ShootingMethod(x0,p,U,b, fJfhand, tvec);              % evaluate function
     dx=-J\f;                    % solve linear system
     nf(iter)=norm(f,inf);            % norm of f at step k+1
     ndx(iter)=norm(dx,inf);          % norm of dx at step k+1

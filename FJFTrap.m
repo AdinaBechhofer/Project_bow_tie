@@ -1,5 +1,5 @@
 function [F, JF] = FJFTrap(x, p, u, b, varargin)
-disp(varargin)
+%disp(varargin)
 input_args = varargin{1};
 t = input_args{1};
 gamma = input_args{2};

@@ -27,7 +27,6 @@ for i = 1:2*num_bowties
     
 end
 %uvec = [u.vEmitter; u.vCollector; u.sinuE; u.sinuC]; % add sinusodial for emitter and collector
-
 f = CG*x+invC*Ivec + invC*b*u;
 % % Stamp G here if non-linear
 % f = zeros(2*num_bowties, 1);

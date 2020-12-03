@@ -67,4 +67,10 @@ This function does the newton method for an N dimensional vector.
 Usage: `newtonNd(fJfhand,x0,p, u, b, t)` or `newtonNd(fJfhand,x0,p, u, b)` for a normal non-linear function computation. 
 
 For trapezoidal method solving, use `newtonNd(TrapHand,x0,p, u, b, t, gamma, dt, integrand)` where `TrapHand` is `FJFTrap` and `integrand` is the fJ function handle for the functin you're interested in integrating. 
+
+
+ #### TrapMethod 
+ This function performs the trapezoidal time integration method for an input function. 
+
+ Usage: `TrapMethod(x0,p,u,b, fJfhand, tvec)` where `fJhand` is the function you want to integrate. 
  
