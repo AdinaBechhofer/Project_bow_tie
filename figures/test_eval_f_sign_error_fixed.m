@@ -65,7 +65,7 @@ timestep = 0.000005;
 % Implement forward euler
 X = ForwardEulerNew(x0,p,u,t_start,t_stop,timestep);
 
-figure;git
+figure;
 plot(X(5,:))
 hold on;
 plot(X(6,:))

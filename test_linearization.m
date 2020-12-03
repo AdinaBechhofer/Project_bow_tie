@@ -3,50 +3,52 @@ clear all;
 
 % hint 1
 x0 = 3;
-u0.vEmitter= 3;
-u0.vCollector = 0.25;
+%u0.vEmitter= 3;
+%u0.vCollector = 0.25;
+u = [3; 0.25];
 xrange = -2:0.1:10;
-[A,B] = linearization(@f_simple, x0, 0, u0);
-f_approx = A*xrange + B*[1; u0.vEmitter; u0.vCollector];
+[A,B] = linearization(@f_simple, x0, 0,0, u,0);
+f_approx = A*xrange + B*[1; u];
 figure;
-plot(xrange, f_simple(xrange, 0, u0), xrange, f_approx)
+plot(xrange, f_simple(xrange,0,0, u,0), xrange, f_approx)
 hold on 
 x0 = 6;
-[A,B] = linearization(@f_simple, x0, 0, u0);
-f_approx = A*xrange + B*[1; u0.vEmitter; u0.vCollector];
+[A,B] = linearization(@f_simple, x0, 0,0, u, 0);
+f_approx = A*xrange + B*[1; u];
 plot(xrange, f_approx)
+xlabel('x')
+ylabel('f(x,p,u)')
+title('Test tangent')
 hold off 
 
 % hint 2
 x1 = zeros(100,1);
-[A1,B1] = linearization(@f_linear, x1, 0, u0);
+[A1,B1] = linearization(@f_linear, x1, 0,0, u, 0);
 x2 = 5000*rand(100,1);
-[A2,B2] = linearization(@f_linear, x2, 0, u0);
+[A2,B2] = linearization(@f_linear, x2, 0,0, u, 0);
 
 figure;
 surf(A1-A2)
-title('A1 - A2')
+title('A1 - A2. Check independence from x')
 
 %hint 3
 x2 = zeros(100,1);
-x2(1:3:end)=-5;
+x2(1:3:end)= -5;
 x2(2:3:end) = 1.7;
 x2(2:5:end) = 3;
-[A,B] = linearization(@f_special, x2, 0, u0);
+[A,B] = linearization(@f_special, x2, 0, u, 0);
 
+clear all
 
 p.NumBowties = 100;
 p.REmitter = 1; % 1 ohm 
-p.RCollector = 1; % 1 ohm 
-%p.Area = 0.0001; % need to actually get a reasonable estimate  
-p.Area = 500000000e-18; % 5 nm^2
-%p.Beta = 0.9; % enhancement factor 
+p.RCollector = 1; % 1 ohm  
+p.Area = 50000e-18; % 5 nm^2 
 p.Beta = 25; % enhancement factor 
 p.Distance = 10; % 10 nm
 p.workFunction = 5.1; % work function of gold 
 p.CemitterCollector = 2; % nano farad
 p.Cparasitic = 0.05; % 0.1 nano farad
-% p.Radius = 1; % 1 nm?
 p.Radius = 10; % 1 nm
 p.taby = csvread('rspa20140811supp3.csv');    
 % number of rows
@@ -54,12 +56,10 @@ p.row = 10;
 % number of columns 
 p.col = 10;
 p.Ccoupling = 0.03;
-%u.jnano = 1;
 
 v1 = 5;
 v2 = 0;
-u.vEmitter =  v1/p.REmitter;
-u.vCollector = v2/p.RCollector;
+u =  [v1/p.REmitter; v2/p.RCollector];
 
 C = zeros(2*p.NumBowties);
 G = zeros(2*p.NumBowties);
@@ -82,15 +82,13 @@ for i = 1:2*p.NumBowties
         end
     end
 end
-%figure;
-%spy(C)
 p.invC = inv(C);
 p.CG = p.invC*G;
 
 x0 = zeros(2*p.NumBowties, 1);
-t_stop = 20;
+t_stop = 15;
 t_start = 0;
-timestep = 0.001;
+timestep = 0.01;
 
 % Implement forward euler
 X(:,1) = x0;
@@ -102,7 +100,7 @@ for n=1:ceil((t_stop-t_start)/timestep)
    f = eval_f2(X(:,n),p,u);
    X(:,n+1)= X(:,n) +  (dt * f);
    [A,B] = linearization(@eval_f2, X_lin(:,n), p, u);
-   f_approx = A*X_lin(:,n)+B*[1; u0.vEmitter; u0.vCollector];
+   f_approx = A*X_lin(:,n)+B*[1; u];
    X_lin(:,n+1)= X_lin(:,n) +  (dt * f_approx);
 end 
 

@@ -1,4 +1,4 @@
-function [x0,f] = newtonNd(fJfhand,gamma,x0,t,dt,itpause,varargin)
+function [x0,f] = newtonNd(fJfhand,x0,p, u, b, varargin)
 % function newton1d(fhand,x0,itpause)
 % 
 % INPUTS:
@@ -21,17 +21,21 @@ end
 
 tol=1e-10;          % convergence tolerance
 
-if isempty(varargin)
-    maxIters=500;       % max # of iterations
-else
-    maxIters = varargin{1}
-end
+% if isempty(varargin)
+%     maxIters=500;       % max # of iterations
+% else
+%     maxIters = varargin{1}
+% end
 x00=x0;             % initial guess
+maxIters=500;
 
 % Newton loop
 for iter=1:maxIters
-    [f J] = FJFTrap(fJfhand,x0,t,gamma,dt);
-   
+    if ~isempty(varargin)
+        [f, J] = fJfhand(x0, p, u, b, varargin);
+    else 
+        [f, J] = fJfhand(x0, p, u, b);
+    end 
     %f = fhand(x0,N,V);              % evaluate function
     %J = Jhand(x0,N,V);              % evaluate jacobian
     dx=-J\f;                    % solve linear system
