@@ -1,4 +1,4 @@
-%clear all;
+clear all;
 close all;
 
 p.NumBowties = 100;
@@ -52,7 +52,7 @@ p.invC = inv(C);
 p.CG = p.invC*G;
 
 v1 = 5;
-v2 = 1;
+v2 = 0;
 period =1.5;
 amplitude = 0.5;
 u = [v1/p.REmitter; v2/p.RCollector];
@@ -73,8 +73,8 @@ X_normal = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec_normal);
 time_euler = toc
 
 tic;
-tvec = 0:0.001:period ;
-x0 = repmat([4.5; 0.5], p.NumBowties, 1);
+tvec = 0:0.5:period ;
+x0 = repmat([4.8; 0.2], p.NumBowties, 1);
 U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
 x0_new = newtonS(x0,p,U,b,@fjbowtie,tvec);
 time_shooting = toc 
