@@ -53,8 +53,8 @@ p.CG = p.invC*G;
 
 v1 = 5;
 v2 = 1;
-u.vEmitter =  v1/p.REmitter;
-u.vCollector = v2/p.RCollector;
+u.vEmitter =  v1;
+u.vCollector = v2;
 u.ampE = 0.5;
 u.ampC = 0.5;
 u.phaseE = 0;
@@ -64,19 +64,21 @@ unitb = [1, 0, 0, 0; 0, 1, 0, 0];
 b = repmat(unitb,p.NumBowties,1);
 
 % excite only the left most row, i.e. add sinusodial for those
-for i = 1:2*p.row
-    if mod(i,2) == 1
-        b(i,3) = 1;
-    else
-        b(i,4) = 1;
-    end
-end
+% for i = 1:2*p.row
+%     if mod(i,2) == 1
+%         b(i,3) = 1;
+%     else
+%         b(i,4) = 1;
+%     end
+% end
 
-x0 = ones(2*p.NumBowties, 1);
+b(1,3) = 1;
+b(1,4) = 1;
+x0 = ones(2*p.NumBowties, 1)*1;
 
-t_stop = 1;
+t_stop = 20;
 t_start = 0;
-timestep = 0.001;
+timestep = 0.01;
 
 tvec = t_start:timestep:t_stop;
 u.period = 20*timestep;
@@ -88,26 +90,38 @@ u.period = 20*timestep;
 % %X = ForwardEuler_t(@fjbowtie,x0,p,u,tvec,b);
 X = TrapMethod(x0,@(xp,tp)fjbowtie(xp,tp,p,u,b), tvec);
 
+figure(9);
+% for n = linspace(1,length(tvec),20)
+%     VisualizeNetwork(X(:,n),p,u)
+% end
+% for n = 1:10:1000
+%     VisualizeNetwork(X(:,n),p,u)
+% end
 
+% figure(1);
+% plot(tvec,X(1,:),'--')
+% hold on;
+% plot(tvec,X(2,:))
+% plot(tvec,X(39,:),'--')
+% plot(tvec,X(40,:))
+% 
+x0_new = newtonS(@(xp,tp)fjbowtie(xp,tp,p,u,b),x0,u,1);
+xT = TrapMethod(x0_new,@(xp,tp)fjbowtie(xp,tp,p,u,b),tvec);
 figure(1);
 plot(tvec,X(1,:),'--')
 hold on;
 plot(tvec,X(2,:))
-
-x0_new = newtonS(@(xp,tp)fjbowtie(xp,tp,p,u,b),x0,u,1);
-xT = TrapMethod(x0_new,@(xp,tp)fjbowtie(xp,tp,p,u,b),tvec);
-
 plot(tvec, xT(1,:),'--',tvec, xT(2,:))
 legend('vodd-before','veven-before','vodd-periodic','veven-periodic')
 
-hold off;
+% hold off;
 % plot(tvec,X(6,:), tvec,xT(6,:))
 % hold off
 % ylabel('v(t)')
 % xlabel('t')
 % legend('vodd-before','vodd-steady-state','veven-before','veven-steady-state')
-
-
+% 
+% figure;
 % plot(X(5+4*p.col,:))
 % plot(X(6+4*p.col,:))
 % plot(X(5+2*(p.row-1)*p.col, :))
