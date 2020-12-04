@@ -1,5 +1,4 @@
 function VisualizeNetwork(X,p,U)
-   
     
     % X is array of all the nodal quantities
     totalnum = 2*p.row*p.col;
@@ -47,24 +46,24 @@ function VisualizeNetwork(X,p,U)
 %     Xnew(2:2:end) = X(2:2:end) - U(2);
     Xnew = X;
 %     pg = plot(Gc,'XData',xc,'YData',yc,'NodeLabel',[]);
-    for i = 1:totalnum     
-        highlight(pg,i,'MarkerSize',(abs(Xnew(i))+1)*1);
-        highlight(pg,i+totalnum,'MarkerSize',1,'NodeColor','r');    
-    end
-    trix1 = [-sqrt(3)/2 sqrt(3)/2 -sqrt(3)/2 -sqrt(3)/2]*0.15*0.6;
-    triy1 = [1 0 -1 1]*0.15;
-    trix2 = gap+[sqrt(3)/2 -sqrt(3)/2 sqrt(3)/2 sqrt(3)/2]*0.15*0.6;
-    triy2 = [1 0 -1 1]*0.15;
-    hold on
-    for j = 1:p.col
-        plot([(j-1)-biasgap (j-1)-biasgap],[0 -p.row], 'r', 'LineWidth',1)
-        plot([(j-1)+gap+biasgap (j-1)+gap+biasgap],[0 -p.row], 'r', 'LineWidth',1)
-        for i = 1:p.row
-           plot(trix1+(j-1),triy1 - (i-1), 'k', 'LineWidth', 2)
-           plot(trix2+(j-1),triy2 - (i-1), 'k', 'LineWidth', 2)
-        end
-    end
- 
+%     for i = 1:totalnum     
+%         highlight(pg,i,'MarkerSize',(abs(Xnew(i))+1)*1);
+%         highlight(pg,i+totalnum,'MarkerSize',1,'NodeColor','r');    
+%     end
+%     trix1 = [-sqrt(3)/2 sqrt(3)/2 -sqrt(3)/2 -sqrt(3)/2]*0.15*0.6;
+%     triy1 = [1 0 -1 1]*0.15;
+%     trix2 = gap+[sqrt(3)/2 -sqrt(3)/2 sqrt(3)/2 sqrt(3)/2]*0.15*0.6;
+%     triy2 = [1 0 -1 1]*0.15;
+%     hold on
+%     for j = 1:p.col
+%         plot([(j-1)-biasgap (j-1)-biasgap],[0 -p.row], 'r', 'LineWidth',1)
+%         plot([(j-1)+gap+biasgap (j-1)+gap+biasgap],[0 -p.row], 'r', 'LineWidth',1)
+%         for i = 1:p.row
+%            plot(trix1+(j-1),triy1 - (i-1), 'k', 'LineWidth', 2)
+%            plot(trix2+(j-1),triy2 - (i-1), 'k', 'LineWidth', 2)
+%         end
+%     end
+%  
     drawnow
     hold off 
 
