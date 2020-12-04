@@ -42,7 +42,7 @@ for i = 1:2*p.NumBowties
         G(i,i) = -1./(p.RCollector);
         if i<= 2*p.row*(p.col-1)
             G(i,i) = G(i,i) + p.Ccoupling;
-            C(i,i+2*p.row-1) = C(i,i+2*p.row-1) + p.Ccoupling;
+            C(i,i+2*p.row-1) = C(i,i+2*p.row-1) - p.Ccoupling;
         end
     end
 end
@@ -67,23 +67,24 @@ t_stop = 20;
 t_start = 0;
 timestep = 0.0005;
 tvec_normal = t_start:timestep:t_stop;
-U = [repmat(u,1,length(tvec_normal)); amplitude*cos(2*pi*tvec_normal/period); amplitude/2*cos(2*pi*tvec_normal/period +0.03)];
+%U = [repmat(u,1,length(tvec_normal)); amplitude*cos(2*pi*tvec_normal/period); amplitude/2*cos(pi*tvec_normal/period +0.03)];
+U = [repmat(u,1,length(tvec_normal)); zeros(2, length(tvec_normal))];
 X_normal = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec_normal);
 %X = TrapMethod(x0,p,U,b,@fjbowtie, tvec);
 time_euler = toc
 
-tic;
-tvec = 0:0.5:period ;
-x0 = repmat([4.8; 0.2], p.NumBowties, 1);
-U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
-x0_new = newtonS(x0,p,U,b,@fjbowtie,tvec);
-time_shooting = toc 
+% tic;
+% tvec = 0:0.5:period ;
+% x0 = repmat([4.8; 0.2], p.NumBowties, 1);
+% U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
+% x0_new = newtonS(x0,p,U,b,@fjbowtie,tvec);
+% time_shooting = toc 
 
-tic;
-tvec = t_start:timestep:t_stop;
-U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
-X_ss = ForwardEuler_t(@eval_f3,x0_new,p,U,b,tvec);
-time_post_euler = toc
+% tic;
+% tvec = t_start:timestep:t_stop;
+% U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
+% X_ss = ForwardEuler_t(@eval_f3,x0_new,p,U,b,tvec);
+% time_post_euler = toc
 
 figure;
 subplot(2, 1, 1)
