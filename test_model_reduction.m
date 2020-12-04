@@ -60,12 +60,12 @@ t_stop = 10;
 t_start = 0;
 timestep = 0.001;
 tvec = t_start:timestep:t_stop;
-period =1.5;
-amplitude = 0.5;
+period =1;
+amplitude = 0.1;
 U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(pi*tvec/period +0.03)];
 
 
-unitb = [1, 0, 1, 0; 0, 1, 0, 1];
+unitb = [1, 0, 0, 0; 0, 1, 0, 0];
 b = repmat(unitb,p.NumBowties,1);
 b(51:end, 3) =0;
 b(1:end-50, 4) = 0;
@@ -165,6 +165,10 @@ X_lin_hat = zeros(length(xq0),ceil((t_stop-t_start)/timestep));
 % hold off;
 
 %% linearize once near x0 = dc steady state
+unitb = [1, 0, 1, 0; 0, 1, 0, 1];
+b = repmat(unitb,p.NumBowties,1);
+b(51:end, 3) =0;
+b(1:end-50, 4) = 0;
 x_dc = newtonNd(@fjbowtie,x0,p,[u; 0; 0],b, tvec);
 [A, B] = linearize_in_x(@eval_f3,x_dc,p,[u; 0; 0],b,tvec(end));
 Ahat = Vq'*A*Vq;

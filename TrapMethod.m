@@ -11,7 +11,7 @@ for l = 1:length(tvec)-1
     f0 = fJfhand(x0,p,u,b,t(l)); 
     %f0 = fJfhand(x0); % our input is time independent
     gamma = x0 + (dt/2)*f0;
-    tf_prod(l) = max(dt*f0);
+    tf_prod(l) = max(abs(dt*f0));
     % Netwon iteration
     itpause = 1;
     % initial guess for Newton is just x from prev timestep
@@ -21,7 +21,7 @@ for l = 1:length(tvec)-1
     
     x0 = xt;
     if nargout>1
-        varargout{1} = tf_prod;
+        varargout{1} = max(tf_prod);
     end 
   
 end

@@ -7,9 +7,9 @@ iter = 1;
 while t_curr <t_end
     
     % Compute gamma
-    disp(size(u_func.func1(t_curr)))
-    disp(size(u_func.func2(t_curr)))
-    u = [u_func.const; u_func.func1(t_curr); u_func.func2(t_curr)];
+    %disp(size(u_func.func1(t_curr)))
+    %disp(size(u_func.func2(t_curr)))
+    u = u_func(t_curr);
     f0 = fJfhand(x0,p,u,b,t_curr); 
     dt = deltf_max/max(abs(f0));
     %f0 = fJfhand(x0); % our input is time independent

@@ -33,28 +33,27 @@ for i = 1:2*p.NumBowties
     if mod(i,2) == 1
         C(i,i+1)= C(i,i+1)-p.CemitterCollector;
         G(i,i) = G(i,i) -1./(p.REmitter);
-        if  i> 2*p.col
+        if  i> 2*p.row
             C(i,i) = C(i,i) + p.Ccoupling;
-            C(i,i-2*p.col+1) = C(i,i-2*p.col+1) -p.Ccoupling;
-            
+            C(i,i-2*p.row+1) = C(i,i-2*p.row+1) -p.Ccoupling;
         end 
     else
         C(i,i-1)= -p.CemitterCollector;
         G(i,i) = -1./(p.RCollector);
-        if i<= 2*p.col*(p.row-1)
-            G(i,i) = G(i,i) + p.Ccoupling;
-            G(i,i+2*p.col-1) = G(i,i+2*p.col-1) + p.Ccoupling;
+        if i<= 2*p.row*(p.col-1)
+            C(i,i) = C(i,i) + p.Ccoupling;
+            C(i,i+2*p.row-1) = C(i,i+2*p.row-1) - p.Ccoupling;
         end
     end
 end
-invC = inv(C);
-p.CG = invC*G;
+p.invC = inv(C);
+p.CG = p.invC*G;
 
 x0 = zeros(2*p.NumBowties, 1);
 
-t_stop = 100;
+t_stop = 0.1;
 t_start = 0;
-timestep = 0.1;
+timestep = 0.00001;
 
 % Implement forward euler
 X = ForwardEulerNew(x0,p,u,t_start,t_stop,timestep);
