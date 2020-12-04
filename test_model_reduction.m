@@ -26,8 +26,7 @@ p.Ccoupling = 0.03;
 
 v1 = 5;
 v2 = 0;
-u.vEmitter =  v1/p.REmitter;
-u.vCollector = v2/p.RCollector;
+u = [v1/p.REmitter; v2/p.RCollector];
 
 % Stamp C and invert; stamp G
 C = zeros(2*p.NumBowties);
@@ -57,17 +56,22 @@ p.CG = p.invC*G;
 
 x0 = zeros(2*p.NumBowties, 1);
 
-t_stop = 0.5;
+t_stop = 10;
 t_start = 0;
-timestep = 0.005;
-
-% Generate solutions in time
+timestep = 0.001;
 tvec = t_start:timestep:t_stop;
+period =1.5;
+amplitude = 0.5;
+U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(pi*tvec/period +0.03)];
 
-unitb = [1, 0; 0, 1];
+
+unitb = [1, 0, 1, 0; 0, 1, 0, 1];
 b = repmat(unitb,p.NumBowties,1);
+b(51:end, 3) =0;
+b(1:end-50, 4) = 0;
+
 % Implement forward euler
-X = ForwardEuler_t(@eval_f3,x0,p,u,tvec,b);
+X = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec);
 % 
 % % plot some nodes
 % figure(2);
@@ -100,7 +104,7 @@ c2hat = Vq'*c2;
 
 xq0 = zeros(q, 1);
 
-t_stop = 0.05; % just do 10 steps -- too slow!
+t_stop = 15; % just do 10 steps -- too slow!
 t_start = 0;
 timestep = 0.005; 
 X_lin_hat = zeros(length(xq0),ceil((t_stop-t_start)/timestep));
@@ -160,23 +164,26 @@ X_lin_hat = zeros(length(xq0),ceil((t_stop-t_start)/timestep));
 % title('voltages over time','FontSize', 8)
 % hold off;
 
-%% linearize once near x0 = 0
-[A, B] = linearize_in_x(@eval_f3,x0,t(n),p,u,b);
+%% linearize once near x0 = dc steady state
+x_dc = newtonNd(@fjbowtie,x0,p,[u; 0; 0],b, tvec);
+[A, B] = linearize_in_x(@eval_f3,x_dc,p,[u; 0; 0],b,tvec(end));
 Ahat = Vq'*A*Vq;
 Bhat = Vq'*B;
-Xo(:,1) = x0;
-X_lin(:,1) = x0;
-X_lin_hat(:,1) = xq0;
+Xo(:,1) = x_dc;
+X_lin(:,1) = x_dc;
+X_lin_hat(:,1) = Vq'*x_dc;
 t(1) = t_start;
 
+
 for n=1:ceil((t_stop-t_start)/timestep)
+   u = U(:, n);
    dt = min(timestep, (t_stop-t(n)));
    t(n+1)= t(n) + dt;
-   f = eval_f3(X(:,n),t(n),p,u,b);
+   f = eval_f3(X(:,n),p,u,b, t(n));
    Xo(:,n+1)= Xo(:,n) +  (dt * f);
-   f_approx = A*X_lin(:,n)+B*[1; u.vEmitter; u.vCollector];
+   f_approx = A*X_lin(:,n)+B*[1; u];
    X_lin(:,n+1)= X_lin(:,n) +  (dt * f_approx);
-   f_approx_hat = Ahat*X_lin_hat(:,n)+Bhat*[1; u.vEmitter; u.vCollector];
+   f_approx_hat = Ahat*X_lin_hat(:,n)+Bhat*[1; u];
    X_lin_hat(:,n+1)= X_lin_hat(:,n) +  (dt * f_approx_hat);
 end 
 
@@ -192,13 +199,13 @@ figure;
 plot(t, y1, 'k.-')
 hold on;
 plot(t, y1_lin, 'b.-')
-plot(t, y1_lin_hat1,'r--')
-plot(t, y1_lin_hat2,'g--')
+%plot(t, y1_lin_hat1,'r--')
+%plot(t, y1_lin_hat2,'g--')
 plot(t, y1_lin_hat5,'m--')
 plot(t, y2, 'k.-')
 plot(t, y2_lin, 'b.-')
-plot(t, y2_lin_hat1,'r--')
-plot(t, y2_lin_hat2,'g--')
+%plot(t, y2_lin_hat1,'r--')
+%plot(t, y2_lin_hat2,'g--')
 plot(t, y2_lin_hat5,'m--')
 legend('v1','v1-lin','v1-lin-q=1','v1-lin-q=2','v1-lin-q=5','v2','v2-lin','v2-lin-q=1','v2-lin-q=2','v2-lin-q=5')
 title('voltages over time','FontSize', 8)

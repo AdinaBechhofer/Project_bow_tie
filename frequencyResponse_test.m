@@ -56,30 +56,57 @@ x0 = zeros(2*p.NumBowties, 1);
 unitb = [1, 0; 0, 1];
 b = repmat(unitb,p.NumBowties,1);
 p.b = b;
-b(1:10) = 1;
-b(11:end) = 0;
+%b(:, 1:2:10) = 1;
+%b(:, 11:end) = 0;
 c = eye(2*p.NumBowties);
 x_ss = newtonNd(@fjbowtie,x0,p,u,b);
 [A,B] = linearization(@eval_f3, x_ss, p, u,b);
 
-freqs = [0.001, 0.003, 0.01, 0.03, 0.1,0.3, 1,3,10,30,100,300,1000,3000, 10000]
-H_mag = zeros(size(freqs));
-H_phase = zeros(size(freqs));
-for i =1:length(freqs)
-    omega = freqs(i);
-    H = c'*inv(1j*omega*eye(2*p.NumBowties) - A)*b;
-    H_mag(i) = abs(H(81,1));
-    H_phase(i) = angle(H(81,1));
+[V,D] = eig(A);
+b_tild = V'*b;
+c_tild = V'*c;
+
+freqs = [0.001, 0.003, 0.01, 0.03, 0.1,0.3, 1,3,10,30,100,300,1000,3000, 10000];
+H_mag_1 = zeros(size(freqs));
+H_phase_1 = zeros(size(freqs));
+H_mag_2 = zeros(size(freqs));
+H_phase_2 = zeros(size(freqs));
+
+
+for q =1:length(freqs)
+    s_minus_lambd = diag(1./(freqs(q) - diag(D)));
+    H = c_tild*s_minus_lambd*b_tild;
+    H_mag_1(q) = abs(H(1,1));
+     H_phase_1(q) = angle(H(1,1));
+     H_mag_2(q) = abs(H(2,1));
+     H_phase_2(q) = angle(H(2,1));
 end 
+
+% freqs = [0.001, 0.003, 0.01, 0.03, 0.1,0.3, 1,3,10,30,100,300,1000,3000, 10000]
+% H_mag_1 = zeros(size(freqs));
+% H_phase_1 = zeros(size(freqs));
+% H_mag_2 = zeros(size(freqs));
+% H_phase_2 = zeros(size(freqs));
+% for i =1:length(freqs)
+%     omega = freqs(i);
+%     H = c'*inv(1j*omega*eye(2*p.NumBowties) - A)*b;
+%     H_mag_1(i) = abs(H(1,1));
+%     H_phase_1(i) = angle(H(1,1));
+%     H_mag_2(i) = abs(H(2,1));
+%     H_phase_2(i) = angle(H(2,1));
+% end 
+
 
 figure;
 subplot(2,1,1)
-semilogx(freqs, mag2db(H_mag))
+semilogx(freqs, mag2db(H_mag_1), freqs, mag2db(H_mag_2))
 xlabel('Sine frequency')
 ylabel('dB response')
 title('Magnitude response')
+legend('|H_{odd}|', '|H_{even}|')
 subplot(2, 1, 2)
-semilogx(freqs, H_phase)
+semilogx(freqs, H_phase_1, freqs, H_phase_2)
 xlabel('Sine frequency')
 ylabel('radians')
 title('Phase response')
+legend('<H_{odd}', '<H_{even}')
