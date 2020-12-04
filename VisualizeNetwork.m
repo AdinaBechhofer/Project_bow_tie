@@ -1,4 +1,6 @@
-function VisualizeNetwork(X,p,u)
+function VisualizeNetwork(X,p,U)
+   
+    
     % X is array of all the nodal quantities
     totalnum = 2*p.row*p.col;
     gap = 0.25;
@@ -9,11 +11,12 @@ function VisualizeNetwork(X,p,u)
     currents = zeros(1,totalnum);
     for i = 1:totalnum
         if mod(i,1)==1
-            currents(1,i) = (X(i)-u.vEmitter)/p.REmitter;
+            currents(1,i) = (X(i)-p.v1)/p.REmitter; 
         else
-            currents(1,i) = (X(i)-u.vCollector)/p.RCollector;
+            currents(1,i) = (X(i)-p.v2)/p.RCollector;
         end
     end
+    
     x =[];
     y = [];
     xc = [];
@@ -33,29 +36,34 @@ function VisualizeNetwork(X,p,u)
     yc = [y y];
     xc = [x xc];
     
-    LWidths = 5*Gc.Edges.Weight/max(Gc.Edges.Weight);
+    LWidths = 5*abs(Gc.Edges.Weight/max(Gc.Edges.Weight))+0.5;
     
-    nodelabels = string(1:1:totalnum);
-    emptylabels = repmat("",1,totalnum);
-%     pg = plot(Gc,'XData',xc,'YData',yc,'NodeLabel',[nodelabels emptylabels],'LineWidth',LWidths, 'EdgeColor','r');
-    pg = plot(Gc,'XData',xc,'YData',yc);
+%     nodelabels = string(1:1:totalnum);
+%     emptylabels = repmat("",1,totalnum);
+    pg = plot(Gc,'XData',xc,'YData',yc,'NodeLabel',[],'LineWidth',LWidths, 'EdgeColor','r');
+    % Subtract steady state for better visualization
+%     Xnew = zeros(length(X),1);
+%     Xnew(1:2:end) = X(1:2:end) - U(1);
+%     Xnew(2:2:end) = X(2:2:end) - U(2);
+    Xnew = X;
+%     pg = plot(Gc,'XData',xc,'YData',yc,'NodeLabel',[]);
     for i = 1:totalnum     
-        highlight(pg,i,'MarkerSize',X(i)*2,'NodeColor','b');
+        highlight(pg,i,'MarkerSize',(abs(Xnew(i))+1)*1);
         highlight(pg,i+totalnum,'MarkerSize',1,'NodeColor','r');    
     end
-%     trix1 = [-sqrt(3)/2 sqrt(3)/2 -sqrt(3)/2 -sqrt(3)/2]*0.15*0.6;
-%     triy1 = [1 0 -1 1]*0.15;
-%     trix2 = gap+[sqrt(3)/2 -sqrt(3)/2 sqrt(3)/2 sqrt(3)/2]*0.15*0.6;
-%     triy2 = [1 0 -1 1]*0.15;
-%     hold on
-%     for j = 1:p.col
-%         plot([(j-1)-biasgap (j-1)-biasgap],[0 -p.row], 'r', 'LineWidth',1)
-%         plot([(j-1)+gap+biasgap (j-1)+gap+biasgap],[0 -p.row], 'r', 'LineWidth',1)
-%         for i = 1:p.row
-%            plot(trix1+(j-1),triy1 - (i-1), 'k', 'LineWidth', 2)
-%            plot(trix2+(j-1),triy2 - (i-1), 'k', 'LineWidth', 2)
-%         end
-%     end
+    trix1 = [-sqrt(3)/2 sqrt(3)/2 -sqrt(3)/2 -sqrt(3)/2]*0.15*0.6;
+    triy1 = [1 0 -1 1]*0.15;
+    trix2 = gap+[sqrt(3)/2 -sqrt(3)/2 sqrt(3)/2 sqrt(3)/2]*0.15*0.6;
+    triy2 = [1 0 -1 1]*0.15;
+    hold on
+    for j = 1:p.col
+        plot([(j-1)-biasgap (j-1)-biasgap],[0 -p.row], 'r', 'LineWidth',1)
+        plot([(j-1)+gap+biasgap (j-1)+gap+biasgap],[0 -p.row], 'r', 'LineWidth',1)
+        for i = 1:p.row
+           plot(trix1+(j-1),triy1 - (i-1), 'k', 'LineWidth', 2)
+           plot(trix2+(j-1),triy2 - (i-1), 'k', 'LineWidth', 2)
+        end
+    end
  
     drawnow
     hold off 
