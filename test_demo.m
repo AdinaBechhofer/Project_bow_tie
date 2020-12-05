@@ -104,7 +104,7 @@ time_euler = toc;
 
 tic
 for n = demopt
-    VisualizeNetwork(X_normal(:,n),p,U(:,n))
+    VisualizeNetwork(X_normal(:,n),p,U(:,n),pulsestr)
     drawnow
 end
 time_visual = toc;

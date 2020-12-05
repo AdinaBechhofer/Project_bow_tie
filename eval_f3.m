@@ -21,7 +21,6 @@ for i = 1:2*num_bowties
     end  
 end
 
-
 if length(varargin) > 1
     % this part is for linearization
     outputmode = varargin{2}; 
@@ -32,4 +31,6 @@ if length(varargin) > 1
     end
 else
     f = CG*x + invC*Ivec + invC*b*u;
+% CG*x
+% invC*Ivec 
 end

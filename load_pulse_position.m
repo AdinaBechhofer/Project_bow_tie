@@ -37,7 +37,7 @@ elseif strcmp(optionflag,'centre-neighbours')
         b(p.NumBowties+p.row*2+2, 3) = 0.25;
         b(p.NumBowties+1+p.row*2+2, 4) = 0.25;
     end
-    demopt = 150:1:250;
+    demopt = 120:1:270;
 elseif strcmp(optionflag, 'left-side')
     for ii = 1:2*p.row
         if mod(ii,2) == 1
@@ -51,5 +51,10 @@ elseif strcmp(optionflag, 'left-side')
 elseif strcmp(optionflag,'left-corner')
     b(1,3) = 1;
     b(2,4) = 1;
+    demopt = 150:1:250;
+    
+elseif strcmp(optionflag,'uniform')
+    b(1:2:end,3) = 1;
+    b(2:2:end,4) = 1;
     demopt = 150:1:250;
 end

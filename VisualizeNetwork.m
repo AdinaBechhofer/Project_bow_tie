@@ -1,21 +1,25 @@
-function VisualizeNetwork(X,p,U)
+function VisualizeNetwork(X,p,U,pos)
     
     % X is array of all the nodal quantities
     totalnum = 2*p.row*p.col;
     gap = 0.25;
     biasgap = 0.3;
+    
     % currents
     sc = 1:1:totalnum;
     tc = totalnum+1:1:2*totalnum;
     currents = zeros(1,totalnum);
     for i = 1:totalnum
         if mod(i,2)==1
-            currents(1,i) = (X(i)-p.v1)/p.REmitter; 
+            currents(1,i) = abs((X(i)-p.v1)/p.REmitter); 
         else
-            currents(1,i) = (X(i)-p.v2)/p.RCollector;
+            currents(1,i) = abs((X(i)-p.v2)/p.RCollector);
         end
     end
+    newcurrents = reshape(currents,7,[]);
+    sumc = sum(newcurrents,1); % sum up all currents in each bias line
     
+    % Drawing positions of all the nodes
     x =[];
     y = [];
     xc = [];
@@ -28,62 +32,44 @@ function VisualizeNetwork(X,p,U)
         y1 = reshape(y11,1,[]);
         y = [y y1];
     end
-%     disp(currents)
-    G = digraph(sc,tc,currents);
-    Gc = flipedge(G,1:2:totalnum);
+    
+    G = digraph(sc,tc,currents); % arrow for current dir
+    Gc = flipedge(G,1:2:totalnum); 
 
     yc = [y y];
     xc = [x xc];
     
-    LWidths = abs(Gc.Edges.Weight/max(Gc.Edges.Weight))+0.5;
+    % Line widths are prop to currents, node size prop to nodal voltage
+    LWidths = 3*abs(Gc.Edges.Weight/max(Gc.Edges.Weight))+0.5;
     MSize = [X; zeros(length(X),1)];
     MSize(1:2:length(X))=abs(MSize(1:2:length(X))-5);
     MSize = abs(MSize) * 20 + 0.5;
     LWidths(LWidths>5)=5;
-    MSize(MSize>10) = 10+2*log(MSize(MSize>10)-9); % reduce growing rate after 10
-    
+    % reduce node growing rate after size 10
+    MSize(MSize>10) = 10+2*log(MSize(MSize>10)-9); 
 %     MSize(MSize>10) = 10
     
-%     nodelabels = string(1:1:totalnum);
-%     emptylabels = repmat("",1,totalnum);
-    
-    array = imread('bowtie49yellow.jpg');
-    imagesc([-1.2 7.05], [-7.15 1.3], array);
+    imgfile = strcat('bowtie49',pos,'.jpg'); % load image
+    array = imread(imgfile);
+    imagesc([-1.2 7.05], [-7.15 1.3], array); % scale them to overlay
     hold on
 %     openfig('firstfig.fig','reuse')
     pg = plot(Gc,'XData',xc,'YData',yc,'NodeLabel',[],'LineWidth',LWidths, 'EdgeColor','r','MarkerSize',MSize);
+    x = -1.2+0.9;
+    y = 1.1;
+    sumc=round(sumc,2);
+    gap = gap+0.04;
+    text(-1.2,1.1-0.2,'Current from','Color','r','FontSize',15)
+    text(-1.2,1.1,'bias line','Color','r','FontSize',15)
     
-    % Subtract steady state for better visualization
-%     Xnew = zeros(length(X),1);
-%     Xnew(1:2:end) = X(1:2:end) - U(1);
-%     Xnew(2:2:end) = X(2:2:end) - U(2);
-
-%     pg = plot(Gc,'XData',xc,'YData',yc,'NodeLabel',[]);
-%     for i = 1:totalnum     
-%         highlight(pg,i,'MarkerSize',(abs(Xnew(i))+1)*1);
-%         highlight(pg,i+totalnum,'MarkerSize',1,'NodeColor','r');    
-%     end
-%     trix1 = [-sqrt(3)/2 sqrt(3)/2 -sqrt(3)/2 -sqrt(3)/2]*0.15*0.6;
-%     triy1 = [1 0 -1 1]*0.15;
-%     trix2 = gap+[sqrt(3)/2 -sqrt(3)/2 sqrt(3)/2 sqrt(3)/2]*0.15*0.6;
-%     triy2 = [1 0 -1 1]*0.15;
-%     hold on
-%     for j = 1:p.col
-%         plot([(j-1)-biasgap (j-1)-biasgap],[0 -p.row], 'r', 'LineWidth',1)
-%         plot([(j-1)+gap+biasgap (j-1)+gap+biasgap],[0 -p.row], 'r', 'LineWidth',1)
-%         for i = 1:p.row
-%            plot(trix1+(j-1),triy1 - (i-1), 'k', 'LineWidth', 2)
-%            plot(trix2+(j-1),triy2 - (i-1), 'k', 'LineWidth', 2)
-%         end
-%     end
-    
-    
+    % print currents from bias line
+    for jj = 1:p.col  
+        text(x,y,[num2str(sumc(2*jj-1))],'Color','r','FontSize',17)
+        x = x+0.72-gap/2;
+        text(x,y,[num2str(sumc(2*jj))],'Color','r','FontSize',17)
+        x = x+3*gap/2;
+    end
     hold off
-    x0=10;
-    y0=10;
-    width=500;
-    height=400;
-%     set(gcf,'position',[x0,y0,width,height])
     set(gcf, 'Position', get(0, 'Screensize'));
     set(gca,'visible','off')
     

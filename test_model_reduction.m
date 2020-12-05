@@ -28,7 +28,7 @@ p.taby = csvread('rspa20140811supp3.csv');
 p.Ccoupling = 0.08; %increase coupling
 p.CcouplingV = 0.08; %increase coupling
 
-p.jnano = 1; % to turn on/off non-linear jnano
+p.jnano = 1e8; % to turn on/off non-linear jnano
 
 % Stamp C and invert; stamp G
 C = zeros(2*p.NumBowties);
@@ -128,7 +128,7 @@ tc = 10; % centre of pulse
 fwhm = 5; % in ns
 period =1.5;
 amplitude = 0.5;
-u = [10; 5];
+u = [5; 0];
 sigma = fwhm/2.35;
 gauss = exp(-(tvec-tc).^2/(sqrt(2*pi)*sigma));
 U = [repmat(u,1,length(tvec));
@@ -175,14 +175,14 @@ figure;
 subplot(2,1,1)
 plot(tvec, y1_ori)
 hold on
-plot(tvec, y1_red)
+plot(tvec, y1_red, '.')
 hold off
 legend('y1','y1-red')
 
 subplot(2,1,2)
 plot(tvec, y2_ori)
 hold on
-plot(tvec, y2_red)
+plot(tvec, y2_red, '.')
 hold off
 legend('y2','y2-red')
 

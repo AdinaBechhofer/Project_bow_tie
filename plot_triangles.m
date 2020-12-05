@@ -19,6 +19,10 @@ for j = 1:p.col
        
     end
 end
+% viscircles([-0.25+0.4,-6.5+0.5],0.4, 'Color','black')
+% rectangle('Position',[-0.25,-6.5,0.75,7], 'LineStyle','--')
+rectangle('Position',[-0.25,-6.5,0.75+6,7],'LineWidth', 2)
+
 set(gca,'visible','off')
 x0=10;
 y0=10;
@@ -26,11 +30,13 @@ width=500;
 height=400;
 set(gcf,'position',[x0,y0,width,height])
 set(gca,'LooseInset',get(gca,'TightInset'));
-saveas(gcf,'bowtie49yellow.jpg') ;
+% saveas(gcf,'bowtie49left-side.jpg') ;
+saveas(gcf,'bowtie49uniform.jpg') ;
+% saveas(gcf,'bowtie49left-corner.jpg') ;
 % close(gcf) ;    
 hold off;
 % figure;
-% array = imread('bowtie7x7.jpg');
+% array = itestmread('bowtie7x7.jpg');
 % imshow(array);
 % hold on;
 
