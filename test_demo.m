@@ -1,4 +1,5 @@
-clear all;
+function test_demo(pulsestr)
+% clear all;
 close all;
 
 p.NumBowties = 49;
@@ -60,8 +61,8 @@ for i = 1:2*p.NumBowties
         end
     end
 end
-figure;
-spy(C)
+% figure;
+% spy(C)
 p.invC = inv(C);
 p.CG = p.invC*G;
 
@@ -71,62 +72,59 @@ period =1.5;
 % amplitude = 0.5;
 amplitude = 10; % amplify effect of incident current
 u = [p.v1; p.v2];
-unitb = [1, 0, 0, 0; 0, 1, 0, 0];
-b = repmat(unitb,p.NumBowties,1); % bias always on
 
-% turn on centre bowtie
-b(p.NumBowties, 3) = 1;
-b(round(p.NumBowties)+1, 4) = 1;
+[b, demopt] = load_pulse_position(p,pulsestr);
 
-% % neighbours get half
-% b(p.NumBowties-2, 3) = 0.5;
-% b(round(p.NumBowties)+1-2, 4) = 0.5;
-% b(p.NumBowties+2, 3) = 0.5;
-% b(round(p.NumBowties)+1+2, 4) = 0.5;
-% b(p.NumBowties-p.row*2, 3) = 0.5;
-% b(round(p.NumBowties)+1-p.row*2, 4) = 0.5;
-% b(p.NumBowties-p.row*2-2, 3) = 0.25;
-% b(round(p.NumBowties)+1-p.row*2-2, 4) = 0.25;
-% b(p.NumBowties-p.row*2+2, 3) = 0.25;
-% b(round(p.NumBowties)+1-p.row*2+2, 4) = 0.25;
-% b(p.NumBowties+p.row*2, 3) = 0.5;
-% b(round(p.NumBowties)+1+p.row*2, 4) = 0.5;
-% b(p.NumBowties+p.row*2-2, 3) = 0.25;
-% b(round(p.NumBowties)+1+p.row*2-2, 4) = 0.25;
-% b(p.NumBowties+p.row*2+2, 3) = 0.25;
-% b(round(p.NumBowties)+1+p.row*2+2, 4) = 0.25;
+% [b, demopt] = load_pulse_position(p,'centre-only');
+% [b, demopt] = load_pulse_position(p,'centre-neighbours');
+% [b, demopt] = load_pulse_position(p,'left-side');
+% [b, demopt] = load_pulse_position(p,'left-corner');
 
 x0 = zeros(2*p.NumBowties, 1);
-tic;
+x_dc = newtonNd(@fjbowtie,x0,p,[u; 0; 0],b);
+x0 = x_dc; % this is our new initial state
+
 t_stop = 40;
 t_start = 0;
 timestep = 0.05;
 tvec_normal = t_start:timestep:t_stop;
-tc = 25; % centre of pulse
-fwhm = 5; % in ns
+tc = 15; % centre of pulse
+% tc = 25;
+fwhm = 40; % in ns
+% fwhm = 5; % in ns
 sigma = fwhm/2.35;
 gauss = exp(-(tvec_normal-tc).^2/(sqrt(2*pi)*sigma));
 U = [repmat(u,1,length(tvec_normal)); 
     amplitude*cos(2*pi*tvec_normal/period).* gauss; 
     amplitude/2*cos(2*pi*tvec_normal/period +0.03).* gauss];
 
+tic;
 X_normal = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec_normal);
-%X = TrapMethod(x0,p,U,b,@fjbowtie, tvec);
-time_euler = toc
+time_euler = toc;
 
 tic
-figure;
-for n = 400:1:600
+for n = demopt
     VisualizeNetwork(X_normal(:,n),p,U(:,n))
+    drawnow
 end
-time_visual = toc
+time_visual = toc;
 
-figure;
-subplot(2, 1, 1)
-plot(tvec_normal, X_normal(p.NumBowties, :), tvec_normal, X_normal(p.NumBowties+1, :), 'linewidth', 1.2)
+% x0 = zeros(2*p.NumBowties, 1);
+% tic;
+% X_normal = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec_normal);
+% time_euler = toc
 
-subplot(2, 1, 2)
-plot(tvec_normal, X_normal(1, :), tvec_normal, X_normal(2, :), 'linewidth', 1.2)
-hold on
+% figure;
+% subplot(2, 1, 1)
+% plot(tvec_normal, X_normal(p.NumBowties, :), tvec_normal, X_normal(p.NumBowties+1, :), 'linewidth', 1.2)
+% legend('centre-v1','centre-v2')
+% ylabel('Voltage (V)')
+% xlabel('time (ns)')
+% 
+% subplot(2, 1, 2)
+% plot(tvec_normal, X_normal(1, :), tvec_normal, X_normal(2, :), 'linewidth', 1.2)
+% legend('corner-v1','corner-v2')
+% ylabel('Voltage (V)')
+% xlabel('time (ns)')
 
 

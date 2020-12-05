@@ -20,7 +20,7 @@ p.row = 10;
 % number of columns 
 p.col = 10;
 p.Ccoupling = 0.03;
-%u.jnano = 1;
+p.jnano = 1;
 
 v1 = 5;
 v2 = 0;
@@ -133,74 +133,74 @@ Fixed_euler_max_error =  max(max(diff, [], 1));
 
 % 0.0007 << 0.12 (more than 2 orders of magnitude diff)
 % max \del t before instability 
-
-% let's check trap 
-del_t = 0.005;
-% del t = 0.0148 results in err= 6.4e-3 which is 0.13% error
-tic;
-tvec_trap = t_start:del_t:t_stop;
-U = [repmat(u,1,length(tvec_trap)); amplitude*cos(2*pi*tvec_trap/period); amplitude/2*cos(2*pi*tvec_trap/period +0.03)];
-[X, tf_prod] = TrapMethod(x0,p,U,b,@fjbowtie, tvec_trap);
-trap_fixed_step_time = toc;
-tsout = resample(tsin_ref, tvec_trap);
-err = abs(tsout.Data' - X);
-figure;
-plot(tvec_trap, max(err, [], 1));
-hold on 
-plot(tvec_trap, X(5,:),tvec_trap, X(6, :), tvec_trap, X(5+4*p.col,:), tvec_trap, X(6+4*p.col,:), 'linewidth', 1.4)
-title('Trap error and result')
-hold off
-fixed_trap_max_error = max(max(err, [], 1));
-
-
-
-u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.03)];
-tic;
-[X_dynamic, t_points_trap] = TrapMethodDynamicStep(x0,p,u_func,b,@fjbowtie,t_start,t_stop, tf_prod*0.02);
-Trap_dynamic_time = toc;
-figure;
-plot(t_points_trap, X_dynamic(5,:), t_points_trap, X_dynamic(6, :), 'linewidth', 1.5)
-hold on 
-tsout = resample(tsin_ref, t_points_trap);
-err = abs(tsout.Data' - X_dynamic);
-plot(t_points_trap, max(err, [], 1))
-plot(tvec_ref, X_ref(5,:), tvec_ref, X_ref(6, :))
-%stem(t_points,  X_dynamic(5,:), 'r')
-%plot(tvec1, zeros(size(tvec1)), 'b.')
-hold off 
-title('Trap Dynamic step size')
-xlabel('time (fs)')
-ylabel('Voltage (V)')
-dynamic_trap_max_error = max(max(err, [], 1));
-
-tic;
-u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.03)];
-[X_dynamic, t_points_e] = ForwardEuler_t(@eval_f3,x0,p,u_func,b,'dynamic', t_start, t_stop,15*tf_max_prof_e);
-Euler_dynamic_time = toc;
-figure;
-plot(t_points_e, X_dynamic(5,:), t_points_e, X_dynamic(6, :), 'linewidth', 1.5)
-hold on 
-tsout = resample(tsin_ref, t_points_e);
-err = abs(tsout.Data' - X_dynamic);
-plot(t_points_e, max(err, [], 1))
-plot(tvec_ref, X_ref(5,:), tvec_ref, X_ref(6, :))
-%stem(t_points,  X_dynamic(5,:), 'r')
-%plot(tvec1, zeros(size(tvec1)), 'b.')
-hold off 
-title('Euler Dynamic step size')
-xlabel('time (fs)')
-ylabel('Voltage (V)')
-dynamic_euler_max_error = max(max(err, [], 1));
-
-disp(['fixed f-Euler computation time: ' num2str(fixed_euler) 's'])
-disp(['fixed f-Euler numer of steps: ' num2str(length(tvec_opt))])
-disp(['fixed f-Euler max error: ' num2str(100*Fixed_euler_max_error/2.5) '%'])
-disp(['fixed Trap computation time: ' num2str(trap_fixed_step_time) 's'])
-disp(['fixed Trap numer of steps: ' num2str(length(tvec_trap))])
-disp(['fixed Trap max error: ' num2str(100*fixed_trap_max_error/2.5) '%'])
-disp(['Dynamic f-Euler computation time: ' num2str(Euler_dynamic_time) 's'])
-disp(['Dynamic f-Euler number of steps: ' num2str(length(t_points_e))])
-disp(['Dynamic f-Euler max error: ' num2str(100*dynamic_euler_max_error/2.5) '%'])
-disp(['Dynamic trap: ' num2str(Trap_dynamic_time) 's'])
-disp(['Dynamic Trap number of steps: ' num2str(length(t_points_trap))])
-disp(['Dynamic Trap max error: ' num2str(100*dynamic_trap_max_error/2.5) '%'])
+% 
+% % let's check trap 
+% del_t = 0.005;
+% % del t = 0.0148 results in err= 6.4e-3 which is 0.13% error
+% tic;
+% tvec_trap = t_start:del_t:t_stop;
+% U = [repmat(u,1,length(tvec_trap)); amplitude*cos(2*pi*tvec_trap/period); amplitude/2*cos(2*pi*tvec_trap/period +0.03)];
+% [X, tf_prod] = TrapMethod(x0,p,U,b,@fjbowtie, tvec_trap);
+% trap_fixed_step_time = toc;
+% tsout = resample(tsin_ref, tvec_trap);
+% err = abs(tsout.Data' - X);
+% figure;
+% plot(tvec_trap, max(err, [], 1));
+% hold on 
+% plot(tvec_trap, X(5,:),tvec_trap, X(6, :), tvec_trap, X(5+4*p.col,:), tvec_trap, X(6+4*p.col,:), 'linewidth', 1.4)
+% title('Trap error and result')
+% hold off
+% fixed_trap_max_error = max(max(err, [], 1));
+% 
+% 
+% 
+% u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.03)];
+% tic;
+% [X_dynamic, t_points_trap] = TrapMethodDynamicStep(x0,p,u_func,b,@fjbowtie,t_start,t_stop, tf_prod*0.02);
+% Trap_dynamic_time = toc;
+% figure;
+% plot(t_points_trap, X_dynamic(5,:), t_points_trap, X_dynamic(6, :), 'linewidth', 1.5)
+% hold on 
+% tsout = resample(tsin_ref, t_points_trap);
+% err = abs(tsout.Data' - X_dynamic);
+% plot(t_points_trap, max(err, [], 1))
+% plot(tvec_ref, X_ref(5,:), tvec_ref, X_ref(6, :))
+% %stem(t_points,  X_dynamic(5,:), 'r')
+% %plot(tvec1, zeros(size(tvec1)), 'b.')
+% hold off 
+% title('Trap Dynamic step size')
+% xlabel('time (fs)')
+% ylabel('Voltage (V)')
+% dynamic_trap_max_error = max(max(err, [], 1));
+% 
+% tic;
+% u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.03)];
+% [X_dynamic, t_points_e] = ForwardEuler_t(@eval_f3,x0,p,u_func,b,'dynamic', t_start, t_stop,15*tf_max_prof_e);
+% Euler_dynamic_time = toc;
+% figure;
+% plot(t_points_e, X_dynamic(5,:), t_points_e, X_dynamic(6, :), 'linewidth', 1.5)
+% hold on 
+% tsout = resample(tsin_ref, t_points_e);
+% err = abs(tsout.Data' - X_dynamic);
+% plot(t_points_e, max(err, [], 1))
+% plot(tvec_ref, X_ref(5,:), tvec_ref, X_ref(6, :))
+% %stem(t_points,  X_dynamic(5,:), 'r')
+% %plot(tvec1, zeros(size(tvec1)), 'b.')
+% hold off 
+% title('Euler Dynamic step size')
+% xlabel('time (fs)')
+% ylabel('Voltage (V)')
+% dynamic_euler_max_error = max(max(err, [], 1));
+% 
+% disp(['fixed f-Euler computation time: ' num2str(fixed_euler) 's'])
+% disp(['fixed f-Euler numer of steps: ' num2str(length(tvec_opt))])
+% disp(['fixed f-Euler max error: ' num2str(100*Fixed_euler_max_error/2.5) '%'])
+% disp(['fixed Trap computation time: ' num2str(trap_fixed_step_time) 's'])
+% disp(['fixed Trap numer of steps: ' num2str(length(tvec_trap))])
+% disp(['fixed Trap max error: ' num2str(100*fixed_trap_max_error/2.5) '%'])
+% disp(['Dynamic f-Euler computation time: ' num2str(Euler_dynamic_time) 's'])
+% disp(['Dynamic f-Euler number of steps: ' num2str(length(t_points_e))])
+% disp(['Dynamic f-Euler max error: ' num2str(100*dynamic_euler_max_error/2.5) '%'])
+% disp(['Dynamic trap: ' num2str(Trap_dynamic_time) 's'])
+% disp(['Dynamic Trap number of steps: ' num2str(length(t_points_trap))])
+% disp(['Dynamic Trap max error: ' num2str(100*dynamic_trap_max_error/2.5) '%'])
