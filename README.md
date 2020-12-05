@@ -42,19 +42,6 @@ Usage: `fjbowtie(x,p,u,b,t)` or `fjbowtie(x,p,u,b)`. The t is optional
 
 u: Vector. Must be precomputed. 
 
-### Other misc. code
-
-#### linearization
-
-This function returns the linearized coefficients of the system [A, B] for linearization about input state x0 AND bias point u0; or just linearization about the input state x0.
-
-Usage: To linearize only about x0, 'linearization(f,x0,p,u,b,t,'onlyx0')'. The t is neccessary
-To linearize about both x0 and u0, 'linearization(f,x0,p,u,b,t)' or 'linearization(f,x0,p,u,b)'. The t is optional.
-
-Usage: 
-
-#### linearize_in_x
-
 
 #### FiniteDifferenceJacobian_t
 This function computes the finite difference Jacobian of the handle function given to it
@@ -86,3 +73,15 @@ For trapezoidal method solving, use `newtonNd(TrapHand,x0,p, u, b, t, gamma, dt,
  This function performs the trapezoidal time integration method for an input function. 
 
  Usage: `TrapMethod(x0,p,u,b, fJfhand, tvec)` where `fJhand` is the function you want to integrate. 
+ 
+
+### Other misc. code
+
+#### linearization
+
+This function returns the linearized coefficients of the system [A, B] for linearization about input state x0 AND bias point u0; or just linearization about the input state x0.
+
+Usage: To linearize only about x0, 'linearization(f,x0,p,u,b,t,'onlyx0')'. The t is neccessary
+To linearize about both x0 and u0, 'linearization(f,x0,p,u,b,t)' or 'linearization(f,x0,p,u,b)'. The t is optional.
+
+
