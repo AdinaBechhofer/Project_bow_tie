@@ -17,7 +17,7 @@ while t_curr <t_end
     % Netwon iteration
     itpause = 1;
     % initial guess for Newton is just x from prev timestep
-    xt = newtonNd(@FJFTrap,x0,p,u,b,t_curr,gamma, dt,fJfhand);
+    xt = newtonNd(@FJFTrap,x0,p,u_func(t_curr + dt),b,t_curr,gamma, dt,fJfhand);
     X(:,iter+1) = xt;   
     %diff = norm(X(:,l)-X(:,l+1))
     x0 = xt;

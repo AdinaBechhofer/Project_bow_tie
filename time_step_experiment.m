@@ -135,7 +135,7 @@ Fixed_euler_max_error =  max(max(diff, [], 1));
 % max \del t before instability 
 
 % let's check trap 
-del_t = 0.005;
+del_t = 0.0105;
 % del t = 0.0148 results in err= 6.4e-3 which is 0.13% error
 tic;
 tvec_trap = t_start:del_t:t_stop;
@@ -156,7 +156,7 @@ fixed_trap_max_error = max(max(err, [], 1));
 
 u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.03)];
 tic;
-[X_dynamic, t_points_trap] = TrapMethodDynamicStep(x0,p,u_func,b,@fjbowtie,t_start,t_stop, tf_prod*0.02);
+[X_dynamic, t_points_trap] = TrapMethodDynamicStep(x0,p,u_func,b,@fjbowtie,t_start,t_stop, tf_prod*0.08);
 Trap_dynamic_time = toc;
 figure;
 plot(t_points_trap, X_dynamic(5,:), t_points_trap, X_dynamic(6, :), 'linewidth', 1.5)
@@ -174,8 +174,8 @@ ylabel('Voltage (V)')
 dynamic_trap_max_error = max(max(err, [], 1));
 
 tic;
-u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.03)];
-[X_dynamic, t_points_e] = ForwardEuler_t(@eval_f3,x0,p,u_func,b,'dynamic', t_start, t_stop,15*tf_max_prof_e);
+u_func = @(t) [u; amplitude*cos(2*pi*t/period); amplitude/2*cos(2*pi*t/period +0.028)];
+[X_dynamic, t_points_e] = ForwardEuler_t(@eval_f3,x0,p,u_func,b,'dynamic', t_start, t_stop,18*tf_max_prof_e);
 Euler_dynamic_time = toc;
 figure;
 plot(t_points_e, X_dynamic(5,:), t_points_e, X_dynamic(6, :), 'linewidth', 1.5)

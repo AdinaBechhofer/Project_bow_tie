@@ -15,11 +15,12 @@ for l = 1:length(tvec)-1
     % Netwon iteration
     itpause = 1;
     % initial guess for Newton is just x from prev timestep
-    xt = newtonNd(@FJFTrap,x0,p,u,b,t(l),gamma, dt,fJfhand);
+    xt = newtonNd(@FJFTrap,x0,p,U(:, l+1),b,t(l),gamma, dt,fJfhand);
     X(:,l+1) = xt;   
     %diff = norm(X(:,l)-X(:,l+1))
     
     x0 = xt;
+end 
     if nargout>1
         varargout{1} = max(tf_prod);
     end 
