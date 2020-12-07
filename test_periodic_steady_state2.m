@@ -22,7 +22,7 @@ p.Radius = 10; % 1 nm
 p.taby = csvread('rspa20140811supp3.csv');    
 
 p.Ccoupling = 0.03;
-%u.jnano = 1;
+p.jnano = 1;
 
 
 % Stamp C and invert; stamp G
@@ -67,38 +67,40 @@ t_stop = 20;
 t_start = 0;
 timestep = 0.0005;
 tvec_normal = t_start:timestep:t_stop;
-%U = [repmat(u,1,length(tvec_normal)); amplitude*cos(2*pi*tvec_normal/period); amplitude/2*cos(pi*tvec_normal/period +0.03)];
-U = [repmat(u,1,length(tvec_normal)); zeros(2, length(tvec_normal))];
+U = [repmat(u,1,length(tvec_normal)); amplitude*cos(2*pi*tvec_normal/period); amplitude/2*cos(pi*tvec_normal/period +0.03)];
+%U = [repmat(u,1,length(tvec_normal)); zeros(2, length(tvec_normal))];
 X_normal = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec_normal);
 %X = TrapMethod(x0,p,U,b,@fjbowtie, tvec);
 time_euler = toc
 
-% tic;
-% tvec = 0:0.5:period ;
-% x0 = repmat([4.8; 0.2], p.NumBowties, 1);
-% U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
-% x0_new = newtonS(x0,p,U,b,@fjbowtie,tvec);
-% time_shooting = toc 
+tic;
+tvec = 0:0.5:period ;
+x0 = repmat([4.8; 0.2], p.NumBowties, 1);
+U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
+x0_new = newtonS(x0,p,U,b,@fjbowtie,tvec);
+time_shooting = toc 
 
-% tic;
-% tvec = t_start:timestep:t_stop;
-% U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
-% X_ss = ForwardEuler_t(@eval_f3,x0_new,p,U,b,tvec);
-% time_post_euler = toc
+tic;
+tvec = t_start:timestep:t_stop;
+U = [repmat(u,1,length(tvec)); amplitude*cos(2*pi*tvec/period); amplitude/2*cos(2*pi*tvec/period +0.03)];
+X_ss = ForwardEuler_t(@eval_f3,x0_new,p,U,b,tvec);
+time_post_euler = toc
 
 figure;
 subplot(2, 1, 1)
 plot(tvec_normal, X_normal(1, :), tvec_normal, X_normal(2, :), 'linewidth', 1.2)
 hold on
 plot(tvec, X_ss(1,:),'--',tvec, X_ss(2,:), '--', 'linewidth', 1.2)
-legend('vodd-normal','veven-normal','vodd-periodic','veven-periodic')
+legend('v1-normal','v2-normal','v1-ss','v2-ss')
 hold off;
-
+ylabel('Voltage (V)')
+xlabel('time (ns)')
 subplot(2, 1, 2)
 plot(tvec_normal, X_normal(end-1, :), tvec_normal, X_normal(end, :), 'linewidth', 1.2)
 hold on
 plot(tvec, X_ss(end-1,:),'--',tvec, X_ss(end,:), '--', 'linewidth', 1.2)
 legend('vodd-normal','veven-normal','vodd-periodic','veven-periodic')
 hold off;
-
+ylabel('Voltage (V)')
+xlabel('time (ns)')
 
