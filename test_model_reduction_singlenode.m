@@ -1,11 +1,11 @@
-clear all;
+%clear all;
 close all;
 
-p.NumBowties = 21*21;
-% p.NumBowties = 49;
+p.NumBowties = 30*30;
+%p.NumBowties = 49;
 % number of rows
-p.row = 21;
-% p.row = 7;
+% p.row = 30;
+p.row = 30;
 % number of columns
 p.col = p.NumBowties/p.row;
 
@@ -104,24 +104,7 @@ x_dc = newtonNd(@fjbowtie,x0,p,[u; 0; 0],b);
 x0 = x_dc; % this is our new initial state
 
 % Generate trajectories
-X = [];
-% b = repmat(unitb,p.NumBowties,1); % bias always on
-% b(p.NumBowties, 3) = 1;
-% b(p.NumBowties+1, 4) = 1;
-% X1 = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec);
-% X = [X, X1];
-% X1 = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec);
-% X = [X, X1];
-% for n = 1:randsample(1:p.NumBowties,80)
-for n = 1:p.NumBowties/3
-    tvec = 0:0.05:10;
-    b = repmat(unitb,p.NumBowties,1); % bias always on
-    b(2*n-1, 3) = 1;
-    b(2*n, 4) = 1;
-    X1 = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec);
-    X1 = X1(:,1:2:end);
-    X = [X, X1];
-end
+X = ForwardEuler_t(@eval_f3,x0,p,U,b,tvec);
 
 % Perform SVD
 [VL, S, VR] = svd(X);
@@ -133,21 +116,12 @@ ylabel('Singular values')
 xlabel('index')
 
 % Pick top q singular values
-q = 450;
+q = 3;
 Vq = VL(:,1:q);
-msetotal = 0;
+msetotal = 0
 
 %% Experimenting different pulses /inputs
-% Define new pulse, random location
-% testloc = 2*randsample(1:p.NumBowties,1) % this is even
-% b = repmat(unitb,p.NumBowties,1); % bias always on
-% b(testloc-1, 3) = 1;
-% b(testloc, 4) = 1;
-% testloc = 2*randsample(1:p.NumBowties,1) % this is even
-b = repmat(unitb,p.NumBowties,1); % bias always on
-b(p.NumBowties, 3) = 1;
-b(p.NumBowties+1, 4) = 1;
-
+% Define new pulse
 t_stop = 20;
 t_start = 0;
 timestep = 0.005;
@@ -163,7 +137,7 @@ U = [repmat(u,1,length(tvec));
     amplitude*cos(2*pi*tvec/period).* gauss;
     amplitude/2*cos(2*pi*tvec/period +0.03).* gauss];
 
-% track output for every single bowtie
+% % track output for every single bowtie
 % for ii = 1:2*p.NumBowties
 %     c = zeros(2*p.NumBowties,1);
 %     c(ii) = 1;
@@ -214,6 +188,7 @@ U = [repmat(u,1,length(tvec));
 % hold off
 % legend('y2','y2-red')
 
+% consider sum
 % % consider random nodes
 c1 = zeros(2*p.NumBowties,1);
 % c1(5) = 1; %consider 5th node
@@ -221,13 +196,13 @@ c1(p.NumBowties) = 1; %consider 5th node
 c2 = zeros(2*p.NumBowties,1);
 % c2(6) = 1;
 c2(p.NumBowties+1) = 1;
-% 
+
 c1hat = Vq'*c1;
 c2hat = Vq'*c2;
-% 
-% X_lin_hat = zeros(q,ceil((t_stop-t_start)/timestep));
-% 
-% % if linearize only x0, u and t are dummies (not used at all)
+
+X_lin_hat = zeros(q,ceil((t_stop-t_start)/timestep));
+
+% if linearize only x0, u and t are dummies (not used at all)
 [A, B] = linearization(@eval_f3,x_dc,p,[u;1;1],b,tvec(1),'onlyx0');
 
 Ahat = Vq'*A*Vq;
@@ -252,31 +227,26 @@ y1_lin_hat = c1hat'*X_lin_hat;
 y2 = c2'*Xo;
 y2_lin = c2'*X_lin;
 y2_lin_hat = c2hat'*X_lin_hat;
-
+% 
 figure(2);
 subplot(2,1,1)
-plot(tvec, y1, 'k-','LineWidth',1)
+plot(tvec, y1, 'k--','LineWidth',2.5)
 hold on
-plot(tvec, y1_lin, 'b.','MarkerSize',1)
-% plot(tvec, y1_lin_hat1,'g.')
-plot(tvec, y1_lin_hat,'m.','MarkerSize',1)
-legend('v1','v1-lin','v1-lin-q=1','v1-lin-q=3')
+plot(tvec, y1_lin, 'bo','MarkerSize',2)
+% plot(tvec, y1_lin_hat5,'g.-')
+plot(tvec, y1_lin_hat,'ro','MarkerSize',0.5)
+legend('v1','v1-lin','v1-lin-q=3')
 title('voltages over time','FontSize', 8)
 ylabel('Voltage (V)')
-xlim([3,15])
 hold off;
-% 
-subplot(2,1,2)
-plot(tvec, y2, 'k-','LineWidth',1)
-hold on
-plot(tvec, y2_lin, 'b.','MarkerSize',1)
-% plot(tvec, y2_lin_hat1,'g.')
-plot(tvec, y2_lin_hat,'m.','MarkerSize',1)
-xlim([3,15])
-legend('v2','v2-lin','v2-lin-q=1','v2-lin-q=3')
-hold off;
-ylabel('Voltage (V)')
 xlabel('time (ns)')
-
-sum((y1_lin_hat - y1).^2)/length(y1)
-sum((y2_lin_hat - y2).^2)/length(y2)
+% subplot(2,1,2)
+% plot(tvec, y2, 'k-')
+% hold on
+% plot(tvec, y2_lin, 'b.')
+% % plot(tvec, y2_lin_hat5,'g.-')
+% plot(tvec, y2_lin_hat3,'m--')
+% legend('v2','v2-lin','v2-lin-q=1','v2-lin-q=3')
+% hold off;
+% ylabel('Voltage (V)')
+% xlabel('time (ns)')

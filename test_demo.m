@@ -69,7 +69,7 @@ p.CG = p.invC*G;
 p.v1 = 5;
 p.v2 = 0;
 period =1.5;
-% amplitude = 0.5;
+%amplitude = 0.5;
 amplitude = 10; % amplify effect of incident current
 u = [p.v1; p.v2];
 
@@ -89,9 +89,9 @@ t_start = 0;
 timestep = 0.05;
 tvec_normal = t_start:timestep:t_stop;
 tc = 15; % centre of pulse
-% tc = 25;
+%tc = 25;
 fwhm = 40; % in ns
-% fwhm = 5; % in ns
+%fwhm = 5; % in ns
 sigma = fwhm/2.35;
 gauss = exp(-(tvec_normal-tc).^2/(sqrt(2*pi)*sigma));
 U = [repmat(u,1,length(tvec_normal)); 
@@ -122,8 +122,8 @@ time_visual = toc;
 % xlabel('time (ns)')
 % 
 % subplot(2, 1, 2)
-% plot(tvec_normal, X_normal(1, :), tvec_normal, X_normal(2, :), 'linewidth', 1.2)
-% legend('corner-v1','corner-v2')
+% plot(tvec_normal, X_normal(p.NumBowties+4, :), tvec_normal, X_normal(p.NumBowties+5, :), 'linewidth', 1.2)
+% legend('next nearest neighour-v1','next nearest neighbour-v2')
 % ylabel('Voltage (V)')
 % xlabel('time (ns)')
 
